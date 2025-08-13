@@ -1,9 +1,4 @@
-import {
-    getRestaurantId,
-    getPrice,
-    getDishName,
-    getHeaders
-} from './modules/dishDataBuilder.js';
+import getAll from './modules/dishDataBuilder.js';
 
 document.addEventListener("DOMContentLoaded", function (){
     const preventForm = document.getElementById("createForm");
@@ -28,15 +23,15 @@ function redirectToDishesPage(restaurantId) {
 function createDish(){
     // 整理表單輸入資料，合併成一個 JSON 格式的物件
     var dishJson = {
-        ...getRestaurantId(),
-        ...getPrice(),
-        ...getDishName()
+        ...getAll.getRestaurantId(),
+        ...getAll.getPrice(),
+        ...getAll.getDishName()
     }
 
     // 使用 fetch 向後端發送 POST 請求，新增一筆餐點資料
     fetch('/dishes', {
         method: "POST",
-        headers: getHeaders(),          // 設定標頭，例如 Content-Type: application/json
+        headers: getAll.getHeaders(),          // 設定標頭，例如 Content-Type: application/json
         body: JSON.stringify(dishJson)  // 將 JavaScript 物件轉為 JSON 字串送出
     })
     .then((response) => {

@@ -1,10 +1,4 @@
-import {
-    getRestaurantName,
-    getCategory,
-    getNote,
-    getImageUrl,
-    getHeaders
-} from './modules/restaurantDataBuilder.js';
+import getAll from './modules/restaurantDataBuilder.js';
 
 document.addEventListener("DOMContentLoaded", function (){
     const preventForm = document.getElementById("createForm");
@@ -24,16 +18,16 @@ document.addEventListener("DOMContentLoaded", function (){
 function createRestaurant(){
     // 整理表單輸入資料，合併成一個 JSON 格式的物件
     var restaurantJson = {
-        ...getRestaurantName(),
-        ...getCategory(),
-        ...getNote(),
-        ...getImageUrl()
+        ...getAll.getRestaurantName(),
+        ...getAll.getCategory(),
+        ...getAll.getNote(),
+        ...getAll.getImageUrl()
     }
 
     // 使用 fetch 向後端發送 POST 請求，新增一筆餐廳資料
     fetch('/restaurants', {
         method: "POST",
-        headers: getHeaders(),               // 設定標頭，例如 Content-Type: application/json
+        headers: getAll.getHeaders(),               // 設定標頭，例如 Content-Type: application/json
         body: JSON.stringify(restaurantJson) // 將 JavaScript 物件轉為 JSON 字串送出
     })
     .then((response) => {

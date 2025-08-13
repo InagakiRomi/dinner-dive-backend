@@ -40,11 +40,15 @@ function getHeaders(){
     return headers;
 }
 
+
 // 統一導出所有方法，讓其他 JS 檔可以 import 使用
-export {
+
+let getAll = {
     getUserId,
     getUsername,
     getPassword,
     getLastModifiedDate,
     getHeaders
-};
+}
+
+export default getAll;

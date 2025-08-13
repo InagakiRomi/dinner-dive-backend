@@ -41,10 +41,13 @@ function getHeaders(){
 }
 
 // 統一導出所有方法，讓其他 JS 檔可以 import 使用
-export {
+
+let getAll = {
     getDishId,
     getRestaurantId,
     getPrice,
     getDishName,
     getHeaders
-};
+}
+
+export default getAll;

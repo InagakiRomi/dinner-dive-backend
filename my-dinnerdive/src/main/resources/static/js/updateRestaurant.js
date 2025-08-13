@@ -1,13 +1,4 @@
-import {
-    getRestaurantId,
-    getRestaurantName,
-    getCategory,
-    getVisitedCount,
-    getLastSelectedAt,
-    getNote,
-    getImageUrl,
-    getHeaders
-} from './modules/restaurantDataBuilder.js';
+import getAll from './modules/restaurantDataBuilder.js';
 
 document.addEventListener("DOMContentLoaded", function (){
     //同步餐廳分類資料庫
@@ -31,18 +22,18 @@ function updateRestaurant(){
 
     // 整理所有欄位資料合併成一個 JSON 物件
     var restaurantJson = {
-        ...getRestaurantName(),
-        ...getCategory(),
-        ...getVisitedCount(),
-        ...getLastSelectedAt(),
-        ...getNote(),
-        ...getImageUrl()
+        ...getAll.getRestaurantName(),
+        ...getAll.getCategory(),
+        ...getAll.getVisitedCount(),
+        ...getAll.getLastSelectedAt(),
+        ...getAll.getNote(),
+        ...getAll.getImageUrl()
     }
 
     // 呼叫後端 API，更新指定 ID 的餐廳資料
-    fetch(`/restaurants/${getRestaurantId()}`, {
+    fetch(`/restaurants/${getAll.getRestaurantId()}`, {
         method: 'PUT',
-        headers: getHeaders(),                // 設定標頭，例如 Content-Type: application/json
+        headers: getAll.getHeaders(),         // 設定標頭，例如 Content-Type: application/json
         body: JSON.stringify(restaurantJson)  // 將資料物件轉成 JSON 字串
     })
     .then(response => {

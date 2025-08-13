@@ -1,8 +1,4 @@
-import {
-    getUsername,
-    getPassword,
-    getHeaders
-} from './modules/memberDataBuilder.js';
+import getAll from './modules/memberDataBuilder.js';
 
 // 等待整個網頁載入完成後再執行邏輯
 document.addEventListener("DOMContentLoaded", function (){
@@ -19,14 +15,14 @@ document.addEventListener("DOMContentLoaded", function (){
 function memberLogin(){
     // 將使用者輸入的帳號與密碼組合成一個物件（用展開語法組成 JSON）
     var memberJson = {
-        ...getUsername(),
-        ...getPassword()
+        ...getAll.getUsername(),
+        ...getAll.getPassword()
     }
 
     // 將資料送出給後端 API
     fetch('/users/login', {
         method: "POST",
-        headers: getHeaders(),           // 設定標頭，例如 Content-Type: application/json
+        headers: getAll.getHeaders(),           // 設定標頭，例如 Content-Type: application/json
         body: JSON.stringify(memberJson) // 將 JavaScript 物件轉為 JSON 字串送出
     })
     .then((response) => {
