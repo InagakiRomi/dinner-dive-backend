@@ -84,7 +84,7 @@ async function deleteDish(event) {
             }
         })
         .catch(error => {
-            alert("系統發生錯誤！");
+            alert("只有管理員帳號可以刪除餐廳資料！");
         });
     }
 }
