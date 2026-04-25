@@ -1,46 +1,25 @@
 // 等待整個網頁載入完成後再執行邏輯
 document.addEventListener("DOMContentLoaded", function () {
   const registerForm = document.getElementById("registerForm");
-  const registerFeedback = document.getElementById("registerFeedback");
-  const registerFeedbackText = document.getElementById("registerFeedbackText");
 
   if (!registerForm) {
     return;
   }
 
-  function showRegisterError(message) {
-    if (!registerFeedback || !registerFeedbackText) {
-      return;
-    }
-
-    registerFeedbackText.textContent = message;
-    registerFeedback.hidden = false;
-  }
-
-  function clearRegisterError() {
-    if (!registerFeedback || !registerFeedbackText) {
-      return;
-    }
-
-    registerFeedbackText.textContent = "";
-    registerFeedback.hidden = true;
-  }
-
   // 當表單送出時，先攔截住預設行為，再呼叫自訂的處理邏輯
   registerForm.addEventListener("submit", function (event) {
     event.preventDefault(); // 防止表單送出時整個頁面刷新
-    clearRegisterError();
-    memberRegister(registerForm, showRegisterError); // 改為用 JavaScript 處理註冊流程
+    memberRegister(registerForm); // 改為用 JavaScript 處理註冊流程
   });
 });
 
 /** 註冊使用者的主邏輯 */
-async function memberRegister(registerForm, showRegisterError) {
+async function memberRegister(registerForm) {
   const usernameInput = registerForm.querySelector("#registerUsername");
   const passwordInput = registerForm.querySelector("#registerPassword");
 
   if (!usernameInput || !passwordInput) {
-    showRegisterError("註冊欄位讀取失敗，請重新整理頁面後再試一次。");
+    window.showAppModal("註冊欄位讀取失敗，請重新整理頁面後再試一次。");
     return;
   }
 
@@ -59,7 +38,7 @@ async function memberRegister(registerForm, showRegisterError) {
     body: JSON.stringify(memberJson),
   }).catch((error) => {
     console.error("註冊時發生錯誤:", error);
-    showRegisterError("系統發生錯誤（網路或連線異常）！");
+    window.showAppModal("系統發生錯誤（網路或連線異常）！");
     return null;
   });
 
@@ -68,8 +47,9 @@ async function memberRegister(registerForm, showRegisterError) {
   }
 
   if (response.ok) {
-    alert("註冊成功！");
-    window.location.href = "/dinnerHome";
+    window.showAppModal("註冊成功！", () => {
+      window.location.href = "/dinnerHome";
+    });
     return;
   }
 
@@ -89,5 +69,5 @@ async function memberRegister(registerForm, showRegisterError) {
     }
   }
 
-  showRegisterError(errorMessage);
+  window.showAppModal(errorMessage);
 }

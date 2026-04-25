@@ -16,7 +16,7 @@ async function randomRestaurant() {
     // 向後端發送 GET 請求，取得隨機餐廳資訊
     const response = await fetch(url).catch((error) => {
         console.error("抽餐廳時發生錯誤:", error);
-        alert("系統發生錯誤（網路或連線異常）！");
+        window.showAppModal("系統發生錯誤（網路或連線異常）！");
         return null;
     });
 
@@ -26,9 +26,9 @@ async function randomRestaurant() {
 
     if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
-            alert("請先登入後再使用抽餐廳功能。");
+            window.showAppModal("請先登入後再使用抽餐廳功能。");
         } else {
-            alert(`取得餐廳失敗（${response.status}）`);
+            window.showAppModal(`取得餐廳失敗（${response.status}）`);
         }
         return;
     }
@@ -74,7 +74,7 @@ async function resetRandom() {
         method: 'POST' // 通知後端清除目前的抽選紀錄
     }).catch((error) => {
         console.error("重置抽籤時發生錯誤:", error);
-        alert("系統發生錯誤（網路或連線異常）！");
+        window.showAppModal("系統發生錯誤（網路或連線異常）！");
         return null;
     });
 
@@ -83,11 +83,11 @@ async function resetRandom() {
     }
 
     if (response.ok) {
-        alert("抽籤紀錄已清除，開始新的抽選！");
+        window.showAppModal("抽籤紀錄已清除，開始新的抽選！");
     } else if (response.status === 401 || response.status === 403) {
-        alert("請先登入後再重置抽籤紀錄。");
+        window.showAppModal("請先登入後再重置抽籤紀錄。");
     } else {
-        alert(`重抽失敗（${response.status}）`);
+        window.showAppModal(`重抽失敗（${response.status}）`);
     }
 }
 

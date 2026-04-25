@@ -35,7 +35,7 @@ async function createDish(){
         body: JSON.stringify(dishJson)  // 將 JavaScript 物件轉為 JSON 字串送出
     }).catch((error) => {
         console.error("新增餐點時發生錯誤:", error);
-        alert("系統發生錯誤（網路或連線異常）！");
+        window.showAppModal("系統發生錯誤（網路或連線異常）！");
         return null;
     });
 
@@ -44,12 +44,13 @@ async function createDish(){
     }
 
     if (response.ok) {
-        alert("餐點新增成功！");
-        redirectToDishesPage(dishJson.restaurantId);
+        window.showAppModal("餐點新增成功！", () => {
+            redirectToDishesPage(dishJson.restaurantId);
+        });
     } else if (response.status === 401 || response.status === 403) {
-        alert("請先登入後再新增餐點。");
+        window.showAppModal("請先登入後再新增餐點。");
     } else {
-        alert(`新增失敗（${response.status}）`);
+        window.showAppModal(`新增失敗（${response.status}）`);
     }
 }
 

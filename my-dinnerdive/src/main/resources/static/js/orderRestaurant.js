@@ -85,7 +85,7 @@ async function deleteDish(event) {
       method: "DELETE",
     }).catch((error) => {
       console.error("刪除餐點時發生錯誤:", error);
-      alert("系統發生錯誤（網路或連線異常）！");
+      window.showAppModal("系統發生錯誤（網路或連線異常）！");
       return null;
     });
 
@@ -96,12 +96,12 @@ async function deleteDish(event) {
     console.log("DELETE /dishes status:", response.status, "ok:", response.ok);
 
     if (response.ok) {
-      alert("刪除成功！");
+      window.showAppModal("刪除成功！");
       await listDishes(); // 刪除成功後重新載入列表
     } else if (response.status === 401 || response.status === 403) {
-      alert("只有管理員帳號可以刪除餐廳資料！");
+      window.showAppModal("只有管理員帳號可以刪除餐廳資料！");
     } else {
-      alert(`刪除失敗（${response.status}）`);
+      window.showAppModal(`刪除失敗（${response.status}）`);
     }
   }
 }

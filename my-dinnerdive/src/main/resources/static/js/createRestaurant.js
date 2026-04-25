@@ -31,7 +31,7 @@ async function createRestaurant(){
         body: JSON.stringify(restaurantJson) // 將 JavaScript 物件轉為 JSON 字串送出
     }).catch((error) => {
         console.error("新增餐廳時發生錯誤:", error);
-        alert("系統發生錯誤（網路或連線異常）！");
+        window.showAppModal("系統發生錯誤（網路或連線異常）！");
         return null;
     });
 
@@ -40,11 +40,12 @@ async function createRestaurant(){
     }
 
     if (response.ok) {
-        alert("餐廳新增成功！");
-        window.location.href = "/dinnerHome/listRestaurant";
+        window.showAppModal("餐廳新增成功！", () => {
+            window.location.href = "/dinnerHome/listRestaurant";
+        });
     } else if (response.status === 401 || response.status === 403) {
-        alert("請先登入後再新增餐廳。");
+        window.showAppModal("請先登入後再新增餐廳。");
     } else {
-        alert(`新增失敗（${response.status}）`);
+        window.showAppModal(`新增失敗（${response.status}）`);
     }
 }

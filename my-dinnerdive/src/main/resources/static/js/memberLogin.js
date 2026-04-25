@@ -26,7 +26,7 @@ async function memberLogin(){
         body: JSON.stringify(memberJson) // 將 JavaScript 物件轉為 JSON 字串送出
     }).catch((error) => {
         console.error("登入時發生錯誤:", error);
-        alert("系統發生錯誤（網路或連線異常）！");
+        window.showAppModal("系統發生錯誤（網路或連線異常）！");
         return null;
     });
 
@@ -35,11 +35,12 @@ async function memberLogin(){
     }
 
     if (response.ok) {
-        alert("登入成功！");
-        window.location.href = "/dinnerHome/randomRestaurant";
+        window.showAppModal("登入成功！", () => {
+            window.location.href = "/dinnerHome/randomRestaurant";
+        });
     } else if (response.status === 401 || response.status === 403) {
-        alert("尚未註冊或密碼輸入錯誤");
+        window.showAppModal("尚未註冊或密碼輸入錯誤");
     } else {
-        alert(`登入失敗（${response.status}）`);
+        window.showAppModal(`登入失敗（${response.status}）`);
     }
 }

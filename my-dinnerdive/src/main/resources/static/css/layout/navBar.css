@@ -20,6 +20,14 @@
     --color-btn-hover-start: #f2717e;                       /* 滑過按鈕漸層起點 */
     --color-btn-hover-end: #ffc8d1;                         /* 滑過按鈕漸層終點 */
     --color-btn-hover-shadow: rgba(248, 110, 125, 0.35);    /* 滑過按鈕陰影變深 */
+
+    /* === [導覽列功能按鈕（暖杏橘）] === */
+    --color-btn-coffee-start: #f8d8c3;
+    --color-btn-coffee-end: #efc2a7;
+    --color-btn-coffee-shadow: rgba(166, 114, 87, 0.2);
+    --color-btn-coffee-hover-start: #fbe2cf;
+    --color-btn-coffee-hover-end: #f4ccb3;
+    --color-btn-coffee-hover-shadow: rgba(166, 114, 87, 0.28);
 }
 
 /* ==== 網頁背景設定 ==== */
@@ -43,6 +51,7 @@ body.pinkTheme {
     justify-content: space-between;                 /* LOGO 與連結分散 */
     align-items: center;                            /* 垂直置中 */
     padding: 15px 30px;                             /* 內距讓內容不貼邊 */
+    position: relative;                             /* 讓中間權限資訊可絕對定位置中 */
     background-color: var(--color-nav-bg);          /* 導覽列底色（亮橘） */
     color: var(--color-nav-text);                   /* 文字顏色 */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);    /* 添加下方陰影 */
@@ -62,6 +71,23 @@ body.pinkTheme {
     font-size: 1.1rem;               /* 字體大小 */
     font-weight: 500;                /* 中等粗體 */
     color: var(--color-nav-text);    /* 文字顏色 */
+}
+
+.role-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+}
+
+.role-info__hint {
+    font-size: 0.95rem;
 }
 
 /* ==== 連結列樣式 ==== */
@@ -105,4 +131,23 @@ body.pinkTheme {
     background: linear-gradient(to right, var(--color-btn-hover-start), var(--color-btn-hover-end));    /* 滑過時變亮 */
     box-shadow: 0 6px 16px var(--color-btn-hover-shadow);                                               /* 陰影變深 */
     transform: translateY(-2px) scale(1.02);                                                            /* 上浮＋放大 */
+}
+
+.navButton--coffee {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    background: linear-gradient(to right, var(--color-btn-coffee-start), var(--color-btn-coffee-end));
+    box-shadow: 0 4px 12px var(--color-btn-coffee-shadow);
+}
+
+.navButton--coffee:hover {
+    color: var(--color-btn-text);
+    background: linear-gradient(to right, var(--color-btn-coffee-hover-start), var(--color-btn-coffee-hover-end));
+    box-shadow: 0 6px 16px var(--color-btn-coffee-hover-shadow);
+}
+
+.navBar .navLinks li a.navButton--coffee:hover {
+    color: var(--color-btn-text);
 }

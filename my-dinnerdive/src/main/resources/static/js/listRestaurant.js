@@ -85,7 +85,7 @@ async function listRestaurant(){
     // 發送 GET 請求向後端查資料
     const response = await fetch(url).catch((error) => {
         console.error("查詢餐廳時發生錯誤:", error);
-        alert("系統發生錯誤（網路或連線異常）！");
+        window.showAppModal("系統發生錯誤（網路或連線異常）！");
         return null;
     });
 
@@ -95,9 +95,9 @@ async function listRestaurant(){
 
     if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
-            alert("請先登入後再查看餐廳資料。");
+            window.showAppModal("請先登入後再查看餐廳資料。");
         } else {
-            alert(`查詢餐廳失敗（${response.status}）`);
+            window.showAppModal(`查詢餐廳失敗（${response.status}）`);
         }
         return;
     }
@@ -170,7 +170,7 @@ async function deleteRestaurant(event) {
             method: "DELETE"
         }).catch((error) => {
             console.error("刪除餐廳時發生錯誤:", error);
-            alert("系統發生錯誤（網路或連線異常）！");
+            window.showAppModal("系統發生錯誤（網路或連線異常）！");
             return null;
         });
 
@@ -179,12 +179,12 @@ async function deleteRestaurant(event) {
         }
 
         if (response.ok) {
-            alert("刪除成功！");
+            window.showAppModal("刪除成功！");
             await listRestaurant(); // 刪除成功後重新載入列表
         } else if (response.status === 401 || response.status === 403) {
-            alert("只有管理員帳號可以刪除餐廳資料！");
+            window.showAppModal("只有管理員帳號可以刪除餐廳資料！");
         } else {
-            alert(`刪除失敗（${response.status}）`);
+            window.showAppModal(`刪除失敗（${response.status}）`);
         }
     }
 };

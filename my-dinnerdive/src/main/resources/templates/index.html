@@ -72,8 +72,8 @@
         </form>
 
         <!-- 錯誤訊息：登入失敗 -->
-        <div th:if="${param.error}" style="text-align: center">
-          <p style="color: red">尚未註冊或密碼輸入錯誤</p>
+        <div id="loginErrorMessage" th:if="${param.error}" style="display: none">
+          <p>尚未註冊或密碼輸入錯誤</p>
         </div>
 
         <!-- 登出訊息 -->
@@ -132,6 +132,15 @@
       document.addEventListener("DOMContentLoaded", function () {
         const currentUrl = new URL(window.location.href);
         const logoutFeedback = document.getElementById("logoutFeedback");
+        const loginErrorMessage = document.getElementById("loginErrorMessage");
+
+        if (loginErrorMessage) {
+          const messageText = loginErrorMessage.textContent.trim();
+          if (messageText) {
+            window.showAppModal(messageText);
+          }
+          loginErrorMessage.remove();
+        }
 
         if (logoutFeedback) {
           setTimeout(function () {
