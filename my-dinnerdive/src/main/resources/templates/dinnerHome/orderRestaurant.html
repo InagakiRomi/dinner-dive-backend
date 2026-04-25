@@ -17,11 +17,13 @@
 <body th:attr="dataRestaurantId=${restaurantId}">
     <option th:replace="~{layout/navBar :: sharedNavBar}"></option>
 
-    <!-- 返回餐廳一覽按鈕 -->
-    <button th:replace="~{modules/categoryButton :: listButton}"></button>
+    <div class="orderActionRow">
+        <!-- 返回餐廳一覽按鈕 -->
+        <button th:replace="~{modules/categoryButton :: listButton}"></button>
 
-    <!-- 新增餐點按鈕 -->
-    <button type="button" class="btn btn-green btn-top-right" id="addDishBtn">新增餐點</button>
+        <!-- 新增餐點按鈕 -->
+        <button type="button" class="btn btn-green" id="addDishBtn">新增餐點</button>
+    </div>
     
     <!--新增餐廳資訊-->
     <div class="formContainer">

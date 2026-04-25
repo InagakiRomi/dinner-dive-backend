@@ -1,3 +1,20 @@
+/* ==== 頂部操作列：返回與新增按鈕 ==== */
+.orderActionRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: calc(100% - 40px); /* 以畫面寬度對齊最右側 */
+  margin: 20px 20px 0;
+}
+
+.orderActionRow .btn-top-left {
+  margin: 0;
+}
+
+.orderActionRow #addDishBtn {
+  margin-left: auto;
+}
+
 /* ==== 主容器區塊：頁面主要結構設定 ==== */
 .container {
   display: flex;     /* 使用 Flex 排版主要區塊 */
@@ -116,4 +133,73 @@
     color: gray;       /* 灰色文字（可依喜好調整） */
     text-align: center;  /* 文字置中 */
     margin-top: 20px;    /* 與上方元素保持距離 */
+}
+
+@media (max-width: 1024px) {
+  .container {
+    margin-top: 14px;
+  }
+
+  .dishRow {
+    gap: 16px;
+  }
+
+  .dishName,
+  .dishPrice {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .orderActionRow {
+    flex-wrap: nowrap;
+    margin: 12px;
+    gap: 10px;
+    width: calc(100% - 24px);
+  }
+
+  .orderActionRow .btn-top-left,
+  .orderActionRow #addDishBtn {
+    margin: 0;
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+  }
+
+  .container {
+    display: block;
+    margin-top: 8px;
+  }
+
+  .mainContent {
+    padding-right: 0;
+  }
+
+  .dish {
+    padding: 12px 0;
+  }
+
+  .dishRow {
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .dishName {
+    flex: 1 1 100%;
+  }
+
+  .dishPrice {
+    width: auto;
+    min-width: 64px;
+  }
+
+  .updateBtn,
+  .deleteBtn {
+    min-width: 80px;
+  }
+
+  .noDishMessage {
+    font-size: 1.1rem;
+  }
 }

@@ -17,12 +17,6 @@
 <body>
     <option th:replace="~{layout/navBar :: sharedNavBar}"></option>
 
-    <!-- 新增餐廳按鈕 -->
-    <button type="button" class="btn btn-green btn-top-right" 
-            onclick="window.location.href='/dinnerHome/createRestaurant'">
-            新增餐廳
-    </button>
-
     <!-- 餐廳列表查詢表單 -->
     <form id="listForm">
         <div>
@@ -35,9 +29,6 @@
             <!-- 關鍵字查詢 -->
             <label for="search">關鍵字：</label>
             <input type="text" id="search" placeholder="輸入餐廳名稱或備註內容">
-
-            <!-- 查詢按鈕 -->
-            <button type="submit" class="btn btn-default">查詢</button>
         </div>
 
         <div>
@@ -54,6 +45,19 @@
                 <option value="ASC">最舊/最少</option>
                 <option value="DESC">最新/最多</option>
             </select>
+        </div>
+
+        <div class="listFormActions">
+            <!-- 查詢按鈕 -->
+            <button type="submit" class="btn btn-default">查詢</button>
+
+            <!-- 新增餐廳按鈕 -->
+            <button
+                type="button"
+                class="btn btn-green list-form-add-btn"
+                onclick="window.location.href='/dinnerHome/createRestaurant'">
+                新增餐廳
+            </button>
         </div>
     </form>
 

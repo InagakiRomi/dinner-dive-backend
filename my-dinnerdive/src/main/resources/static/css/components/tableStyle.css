@@ -67,8 +67,13 @@ form#listForm > div {
     flex-wrap: wrap;          /* 超出寬度時自動換行 */
     align-items: center;      /* 垂直置中對齊 */
     gap: 12px;                /* 元素之間間距 */
-    margin: 20px 0 20px 20px; /* 上下外距 + 左距確保靠左不貼邊 */
-    max-width: 1200px;        /* 最大寬度限制 */
+    width: calc(100% - 40px); /* 讓按鈕可對齊到畫面右側 */
+    margin: 20px;             /* 左右各保留一致邊距 */
+    max-width: none;          /* 不限制寬度，避免右側對齊受限 */
+}
+
+.list-form-add-btn {
+    margin-left: auto; /* 將「新增餐廳」推到該列最右側 */
 }
 
 form#listForm input[type="text"],
@@ -109,4 +114,72 @@ form#listForm select {
 /* 第一個按鈕為單獨一行 */
 .buttonGroup button:first-child {
     flex: 1 1 100%;  /* 讓第一顆按鈕獨占一整行 */
+}
+
+/* ==== 平板 RWD ==== */
+@media (max-width: 1024px) {
+    form#listForm > div {
+        margin: 16px;
+    }
+
+    .table th,
+    .table td {
+        font-size: 0.95rem;
+        padding: 8px;
+    }
+
+    .switchPageBtn {
+        gap: 12px;
+        margin: 22px 0;
+    }
+}
+
+/* ==== 手機 RWD ==== */
+@media (max-width: 767px) {
+    form#listForm > div {
+        margin: 12px;
+        gap: 10px;
+    }
+
+    form#listForm label,
+    form#listForm input[type="text"],
+    form#listForm select,
+    form#listForm .btn {
+        width: 100%;
+    }
+
+    .list-form-add-btn {
+        margin-left: 0;
+    }
+
+    .table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+    }
+
+    .table th,
+    .table td {
+        min-width: 110px;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    .table th:nth-child(9),
+    .table td:nth-child(9) {
+        width: auto;
+        min-width: 180px;
+    }
+
+    .buttonGroup {
+        min-width: 160px;
+    }
+
+    .switchPageBtn {
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 0.95rem;
+        padding: 0 12px;
+    }
 }

@@ -1,0 +1,54 @@
+/* ==== 全域 RWD 斷點設定 ==== */
+/* 桌機：1025px 以上（預設） */
+/* 平板：768px - 1024px */
+/* 手機：767px 以下 */
+
+/* 基本容器與媒體元素自適應 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 避免長字串在窄螢幕造成溢出 */
+body {
+  overflow-wrap: break-word;
+}
+
+/* 表格頁面在窄螢幕可左右滑動查看 */
+.table {
+  max-width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .btn {
+    font-size: 1rem;
+    padding: 12px 20px;
+  }
+
+  .btn-wide {
+    width: 80%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .btn-wide {
+    width: 100%;
+    margin-top: 14px;
+  }
+
+  .btn-top-left,
+  .btn-top-right {
+    position: static;
+    display: block;
+    width: calc(100% - 24px);
+    margin: 12px auto 0;
+  }
+}

@@ -151,3 +151,75 @@ body.pinkTheme {
 .navBar .navLinks li a.navButton--coffee:hover {
     color: var(--color-btn-text);
 }
+
+/* ==== 平板 RWD ==== */
+@media (max-width: 1024px) {
+    .navBar {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+        padding: 14px 18px;
+    }
+
+    .navBar .logo {
+        width: 100%;
+        text-align: center;
+        font-size: 1.5rem;
+    }
+
+    .role-info {
+        position: static;
+        transform: none;
+        order: 2;
+        width: 100%;
+        white-space: normal;
+    }
+
+    .navBar .navLinks {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
+
+/* ==== 手機 RWD ==== */
+@media (max-width: 767px) {
+    .navBar {
+        align-items: stretch;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .navBar .logo {
+        font-size: 1.25rem;
+    }
+
+    .label-bold {
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+
+    .role-info__hint {
+        font-size: 0.85rem;
+    }
+
+    .navBar .navLinks {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .navBar .navLinks li,
+    .navBar .navLinks li form {
+        width: 100%;
+    }
+
+    .navButton,
+    .navButton--coffee {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 1rem;
+        border-radius: 10px;
+    }
+}

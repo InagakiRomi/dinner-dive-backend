@@ -8,3 +8,18 @@
     object-fit: cover;                            /* 圖片等比例裁切填滿容器，不變形 */
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* 添加陰影產生浮起感 */
 }
+
+@media (max-width: 1024px) {
+    .restaurantImage {
+        width: min(100%, 640px);
+        height: auto;
+        aspect-ratio: 3 / 2;
+    }
+}
+
+@media (max-width: 767px) {
+    .restaurantImage {
+        margin: 14px auto;
+        border-radius: 10px;
+    }
+}
