@@ -1,6 +1,9 @@
 package com.romi.my_dinnerdive.constant;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /** 定義帳號有哪些使用者，用於設定角色權限 */
+@Schema(description = "使用者角色列舉")
 public enum UserCategory {
 
     // 帳號分類，每個括號裡的是「對外顯示的中文名稱」

@@ -4,33 +4,42 @@ import java.util.Date;
 
 import com.romi.my_dinnerdive.constant.RestaurantCategory;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 /** 用於接收前端傳送過來的 JSON 資料，新增或修改餐廳時使用 */
+@Schema(description = "餐廳新增或更新請求資料")
 public class RestaurantRequest {
 
     /** 餐廳名稱，不可為空 */
+    @Schema(description = "餐廳名稱", example = "阿明牛肉麵")
     @NotBlank
     private String restaurantName;
 
     /** 餐廳分類 */
+    @Schema(description = "餐廳分類，可填 MAIN、SNACK、DRINK", example = "MAIN")
     @NotNull
     private RestaurantCategory category;
 
     /** 餐廳圖片URL */
+    @Schema(description = "餐廳圖片網址", example = "https://example.com/restaurant.jpg")
     private String imageUrl;
 
     /** 選擇次數 */
+    @Schema(description = "被選中的累計次數", example = "0")
     private Integer visitedCount;
 
     /** 最後一次選擇時間 */
+    @Schema(description = "最後一次被選中的時間", example = "2026-04-26T00:00:00.000+08:00")
     private Date lastSelectedAt;
 
     /** 最後一次更新時間 */
+    @Schema(description = "資料最後更新時間", example = "2026-04-26T00:00:00.000+08:00")
     private Date updatedAt;
 
     /** 備註欄 */
+    @Schema(description = "補充說明或備註", example = "平日中午人較少")
     private String note;
 
     public String getRestaurantName() {

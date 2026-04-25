@@ -1,6 +1,9 @@
 package com.romi.my_dinnerdive.constant;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /** 定義餐廳有哪些分類 */
+@Schema(description = "餐廳分類列舉")
 public enum RestaurantCategory {
 
     // 餐廳分類，每個括號裡的是「對外顯示的中文名稱」
