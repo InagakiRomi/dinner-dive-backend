@@ -116,8 +116,8 @@ async function listRestaurant(){
             <td>
                 <div class="buttonGroup">
                     <button class="btn btn-yellow" onclick="location.href='/dinnerHome/restaurants/${restaurant.restaurantId}/dishes'">菜單</button>
-                    <button class="btn btn-pink" onclick="location.href='/dinnerHome/restaurants/${restaurant.restaurantId}/edit'">修改</button>
-                    <button class="delete-btn btn btn-pink" data-id="${restaurant.restaurantId}">刪除</button>
+                    <button class="btn btn-default" onclick="location.href='/dinnerHome/restaurants/${restaurant.restaurantId}/edit'">修改</button>
+                    <button class="delete-btn btn btn-default" data-id="${restaurant.restaurantId}">刪除</button>
                 </div>
             </td>
         `;

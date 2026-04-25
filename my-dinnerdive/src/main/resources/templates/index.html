@@ -1,66 +1,80 @@
 <!-- 登入首頁 -->
-<!DOCTYPE html>
+<!doctype html>
 <!-- 啟用 Thymeleaf 語法 -->
 <html xmlns:th="http://www.thymeleaf.org">
-
-<head>
+  <head>
     <!-- 引入共用的 head -->
     <option th:replace="~{layout/headTitle :: commonHeadTitle}"></option>
-    
+
     <!-- 頁面 favicon -->
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
-    
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+
     <!-- 匯入按鈕樣式 -->
-    <link rel="stylesheet" href="/css/components/buttonStyle.css">
+    <link rel="stylesheet" href="/css/components/buttonStyle.css" />
 
     <!-- 匯入導覽列樣式 -->
-    <link rel="stylesheet" href="/css/layout/navBar.css">
-    
-    <!-- 匯入表單通用樣式 -->
-    <link rel="stylesheet" href="/css/forms/formCommon.css">
-</head>
+    <link rel="stylesheet" href="/css/layout/navBar.css" />
 
-<body>
+    <!-- 匯入表單通用樣式 -->
+    <link rel="stylesheet" href="/css/forms/formCommon.css" />
+    <!-- 匯入登入頁樣式 -->
+    <link rel="stylesheet" href="/css/pages/index.css" />
+  </head>
+
+  <body class="login-page">
     <!-- 主標題 -->
-    <h1 style="text-align: center;">Dinner Dive</h1>
-    
+    <div class="page-title-wrap">
+      <img class="page-logo" src="/images/logo.png" alt="Dinner Dive" />
+    </div>
+
     <!-- 登入表單區塊 -->
     <div class="formContainer">
-        <h1>會員登入</h1>
+      <h1>會員登入</h1>
 
-        <!-- 登入表單，送出至 `/login`（POST 方法） -->
-         <form th:action="@{/users/login}" method="post">
+      <!-- 登入表單，送出至 `/login`（POST 方法） -->
+      <form th:action="@{/users/login}" method="post">
+        <!-- 帳號欄位 -->
+        <div th:replace="~{fragments/loginForm :: usernameImput}"></div>
 
-            <!-- 帳號欄位 -->
-            <div th:replace="~{fragments/loginForm :: usernameImput}"></div>
+        <!-- 密碼欄位 -->
+        <label for="password">密碼：</label>
+        <input
+          type="password"
+          name="password"
+          id="password"
+          placeholder="只能輸入英文和數字和特殊符號"
+          maxlength="256"
+          oninput="
+            this.value = this.value.replace(
+              /[^a-zA-Z0-9!@#$%^&*()_+\-=\\[\]{};':&quot;\\|,.&lt;&gt;\/?`~]/g,
+              '',
+            )
+          "
+          required
+        />
 
-            <!-- 密碼欄位 -->
-            <label for="password">密碼：</label>
-            <input type="password" name="password" id="password"
-                    placeholder="只能輸入英文和數字和特殊符號"
-                    maxlength="256"
-                    oninput="this.value = this.value.replace(/[^a-zA-Z0-9!@#$%^&*()_+\-=\\[\]{};':&quot;\\|,.&lt;&gt;\/?`~]/g, '')"
-                    required />
+        <!-- 登入按鈕 -->
+        <button type="submit" class="btn btn-default btn-wide">登入</button>
 
-            <!-- 登入按鈕 -->
-            <button type="submit" class="btn btn-pink btn-wide">登入</button>
-            
-            <!-- 導向註冊頁按鈕 -->
-            <button type="button" class="btn btn-pink btn-wide"
-                    onclick="window.location.href='/dinnerHome/memberRegister'">
-                    還沒有帳號？前往註冊
-            </button>
-        </form>
+        <!-- 導向註冊頁按鈕 -->
+        <button
+          type="button"
+          class="btn btn-default btn-wide"
+          onclick="window.location.href = '/dinnerHome/memberRegister'"
+        >
+          還沒有帳號？前往註冊
+        </button>
+      </form>
 
-        <!-- 錯誤訊息：登入失敗 -->
-        <div th:if="${param.error}" style="text-align: center;">
-            <p style="color:red;">尚未註冊或密碼輸入錯誤</p>
-        </div>
+      <!-- 錯誤訊息：登入失敗 -->
+      <div th:if="${param.error}" style="text-align: center">
+        <p style="color: red">尚未註冊或密碼輸入錯誤</p>
+      </div>
 
-        <!-- 登出訊息 -->
-        <div th:if="${param.logout}" style="text-align: center;">
-            <p style="color:green;">你已登出</p>
-        </div>
+      <!-- 登出訊息 -->
+      <div th:if="${param.logout}" style="text-align: center">
+        <p style="color: green">你已登出</p>
+      </div>
     </div>
-</body>
+  </body>
 </html>

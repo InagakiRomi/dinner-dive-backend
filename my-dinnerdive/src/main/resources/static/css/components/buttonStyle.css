@@ -34,8 +34,8 @@
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);     /* 陰影變小，感覺更貼近底部 */
 }
 
-/* 粉色系按鈕背景 */
-.btn-pink {
+/* 預設按鈕背景 */
+.btn-default {
     background: linear-gradient(135deg, #ff9a9e, #fad0c4); /* 漸層背景 */
 }
 
