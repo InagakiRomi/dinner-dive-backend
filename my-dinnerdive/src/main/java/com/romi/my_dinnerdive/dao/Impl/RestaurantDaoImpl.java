@@ -26,6 +26,7 @@ public class RestaurantDaoImpl implements RestaurantDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
+    @SuppressWarnings("null")
     public Integer countRestaurant(RestaurantQueryParams restaurantQueryParams){
         String sql = "SELECT count(*) FROM restaurants WHERE 1=1";
         Map<String, Object> map = new HashMap<>();
@@ -130,6 +131,7 @@ public class RestaurantDaoImpl implements RestaurantDao {
     }
 
     @Override
+    @SuppressWarnings("null")
     public List<Integer> getAllRestaurantIds(RestaurantQueryParams restaurantQueryParams) {
         String sql = "SELECT restaurant_id FROM restaurants WHERE 1=1";
 
