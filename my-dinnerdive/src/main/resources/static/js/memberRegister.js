@@ -1,40 +1,92 @@
-import getAll from './modules/memberDataBuilder.js';
-
 // 等待整個網頁載入完成後再執行邏輯
-document.addEventListener("DOMContentLoaded", function (){
-    const preventForm = document.getElementById("registerForm");
-    // 當表單送出時，先攔截住預設行為，再呼叫自訂的處理邏輯
-    preventForm.addEventListener("submit", preventFormSubmit);
+document.addEventListener("DOMContentLoaded", function () {
+  const registerForm = document.getElementById("registerForm");
+  const registerFeedback = document.getElementById("registerFeedback");
+  const registerFeedbackText = document.getElementById("registerFeedbackText");
 
-    function preventFormSubmit(event) {
-        event.preventDefault();  // 防止表單送出時整個頁面刷新
-        memberRegister();        // 改為用 JavaScript 處理註冊流程
+  if (!registerForm) {
+    return;
+  }
+
+  function showRegisterError(message) {
+    if (!registerFeedback || !registerFeedbackText) {
+      return;
     }
-})
+
+    registerFeedbackText.textContent = message;
+    registerFeedback.hidden = false;
+  }
+
+  function clearRegisterError() {
+    if (!registerFeedback || !registerFeedbackText) {
+      return;
+    }
+
+    registerFeedbackText.textContent = "";
+    registerFeedback.hidden = true;
+  }
+
+  // 當表單送出時，先攔截住預設行為，再呼叫自訂的處理邏輯
+  registerForm.addEventListener("submit", function (event) {
+    event.preventDefault(); // 防止表單送出時整個頁面刷新
+    clearRegisterError();
+    memberRegister(registerForm, showRegisterError); // 改為用 JavaScript 處理註冊流程
+  });
+});
 
 /** 註冊使用者的主邏輯 */
-function memberRegister(){
-    // 將使用者輸入的帳號與密碼組合成一個物件（用展開語法組成 JSON）
-    var memberJson = {
-        ...getAll.getUsername(),
-        ...getAll.getPassword()
-    }
+function memberRegister(registerForm, showRegisterError) {
+  const usernameInput = registerForm.querySelector("#registerUsername");
+  const passwordInput = registerForm.querySelector("#registerPassword");
 
-    // 將資料送出給後端 API
-    fetch('/users/register', {
-        method: "POST",
-        headers: getAll.getHeaders(),           // 設定標頭，例如 Content-Type: application/json
-        body: JSON.stringify(memberJson) // 將 JavaScript 物件轉為 JSON 字串送出
-    })
-    .then((response) => {
-        if (response.ok) {
-            alert("註冊成功！");
-            window.location.href = "/dinnerHome";
-        } else {
-            alert("該帳號已經被註冊");
+  if (!usernameInput || !passwordInput) {
+    showRegisterError("註冊欄位讀取失敗，請重新整理頁面後再試一次。");
+    return;
+  }
+
+  const memberJson = {
+    username: usernameInput.value,
+    userPassword: passwordInput.value,
+  };
+
+  // 將資料送出給後端 API
+  fetch("/users/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(memberJson),
+  })
+    .then(async (response) => {
+      if (response.ok) {
+        alert("註冊成功！");
+        window.location.href = "/dinnerHome";
+      } else {
+        let errorMessage = "註冊失敗，請稍後再試。";
+
+        const errorData = await response
+          .json()
+          .then((data) => data)
+          .catch(() => null);
+
+        if (typeof errorData?.error === "string" && errorData.error.trim()) {
+          errorMessage = errorData.error;
+        } else if (errorData && typeof errorData === "object") {
+          // 驗證錯誤會是欄位對應訊息的 JSON，合併成單一提示字串
+          const fieldErrors = Object.values(errorData).filter(
+            (message) => typeof message === "string" && message.trim(),
+          );
+
+          if (fieldErrors.length > 0) {
+            errorMessage = fieldErrors.join("\n");
+          }
         }
+
+        showRegisterError(errorMessage);
+      }
     })
-    .catch((error) => {
-        alert("系統發生錯誤！");
-    })
+    .catch(() => {
+      showRegisterError("系統發生錯誤！");
+    });
 }

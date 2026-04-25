@@ -69,7 +69,7 @@ public class SecurityConfig {
                 .requestMatchers(SWAGGER_URL_AUTH_WHITELIST).permitAll()
 
                 // 靜態資源與登入頁面、註冊頁面允許所有人訪問
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/dinnerHome", "/dinnerHome/memberRegister").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/dinnerHome").permitAll()
 
                 // 註冊 API 允許所有人存取
                 .requestMatchers(HttpMethod.POST, "/users/register").permitAll()

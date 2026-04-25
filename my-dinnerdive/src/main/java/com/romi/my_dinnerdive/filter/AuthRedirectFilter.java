@@ -37,8 +37,8 @@ public class AuthRedirectFilter extends OncePerRequestFilter {
         // 判斷是否為已登入狀態（排除匿名用戶）
         boolean isLoggedIn = auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal());
 
-        // 若已登入且進入登入或註冊頁，則導向首頁
-        if (isLoggedIn && ("/dinnerHome".equals(path) || "/dinnerHome/memberRegister".equals(path))) {
+        // 若已登入且進入登入頁，則導向首頁
+        if (isLoggedIn && ("/dinnerHome".equals(path))) {
             response.sendRedirect("/dinnerHome/randomRestaurant");
             return;
         }

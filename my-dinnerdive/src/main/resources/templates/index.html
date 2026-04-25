@@ -27,54 +27,129 @@
       <img class="page-logo" src="/images/logo.png" alt="Dinner Dive" />
     </div>
 
-    <!-- 登入表單區塊 -->
+    <!-- 登入/註冊表單區塊 -->
     <div class="formContainer">
-      <h1>會員登入</h1>
+      <h1 id="authTitle">會員登入</h1>
 
-      <!-- 登入表單，送出至 `/login`（POST 方法） -->
-      <form th:action="@{/users/login}" method="post">
-        <!-- 帳號欄位 -->
-        <div th:replace="~{fragments/loginForm :: usernameImput}"></div>
+      <!-- 登入表單 -->
+      <div id="loginPanel" class="auth-panel is-active">
+        <form th:action="@{/users/login}" method="post">
+          <label for="loginUsername">帳號：</label>
+          <input
+            type="text"
+            name="username"
+            id="loginUsername"
+            placeholder="只能輸入英文和數字"
+            maxlength="256"
+            pattern="^[a-zA-Z0-9]*$"
+            required
+          />
 
-        <!-- 密碼欄位 -->
-        <label for="password">密碼：</label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          placeholder="只能輸入英文和數字和特殊符號"
-          maxlength="256"
-          oninput="
-            this.value = this.value.replace(
-              /[^a-zA-Z0-9!@#$%^&*()_+\-=\\[\]{};':&quot;\\|,.&lt;&gt;\/?`~]/g,
-              '',
-            )
-          "
-          required
-        />
+          <label for="loginPassword">密碼：</label>
+          <input
+            type="password"
+            name="password"
+            id="loginPassword"
+            placeholder="只能輸入英文和數字和特殊符號"
+            maxlength="256"
+            oninput="
+              this.value = this.value.replace(
+                /[^a-zA-Z0-9!@#$%^&*()_+\-=\\[\]{};':&quot;\\|,.&lt;&gt;\/?`~]/g,
+                '',
+              )
+            "
+            required
+          />
 
-        <!-- 登入按鈕 -->
-        <button type="submit" class="btn btn-default btn-wide">登入</button>
+          <button type="submit" class="btn btn-default btn-wide">登入</button>
+          <button
+            type="button"
+            class="btn btn-default btn-wide"
+            id="toRegisterBtn"
+          >
+            還沒有帳號？前往註冊
+          </button>
+        </form>
 
-        <!-- 導向註冊頁按鈕 -->
-        <button
-          type="button"
-          class="btn btn-default btn-wide"
-          onclick="window.location.href = '/dinnerHome/memberRegister'"
-        >
-          還沒有帳號？前往註冊
-        </button>
-      </form>
+        <!-- 錯誤訊息：登入失敗 -->
+        <div th:if="${param.error}" style="text-align: center">
+          <p style="color: red">尚未註冊或密碼輸入錯誤</p>
+        </div>
 
-      <!-- 錯誤訊息：登入失敗 -->
-      <div th:if="${param.error}" style="text-align: center">
-        <p style="color: red">尚未註冊或密碼輸入錯誤</p>
+        <!-- 登出訊息 -->
+        <div th:if="${param.logout}" class="auth-feedback auth-feedback--logout">
+          <p class="auth-feedback__title">你已登出</p>
+        </div>
       </div>
 
-      <!-- 登出訊息 -->
-      <div th:if="${param.logout}" style="text-align: center">
-        <p style="color: green">你已登出</p>
+      <!-- 註冊表單 -->
+      <div id="registerPanel" class="auth-panel">
+        <form id="registerForm">
+          <label for="registerUsername">帳號：</label>
+          <input
+            type="text"
+            id="registerUsername"
+            name="username"
+            placeholder="只能輸入英文和數字"
+            maxlength="256"
+            pattern="^[a-zA-Z0-9]*$"
+            required
+          />
+
+          <label for="registerPassword">密碼：</label>
+          <input
+            type="password"
+            id="registerPassword"
+            name="userPassword"
+            placeholder="只能輸入英文和數字和特殊符號"
+            maxlength="256"
+            oninput="
+              this.value = this.value.replace(
+                /[^a-zA-Z0-9!@#$%^&*()_+\-=\\[\]{};':&quot;\\|,.&lt;&gt;\/?`~]/g,
+                '',
+              )
+            "
+            required
+          />
+
+          <button type="submit" class="btn btn-default btn-wide">註冊</button>
+          <button type="button" class="btn btn-default btn-wide" id="toLoginBtn">
+            已有帳號？點此登入
+          </button>
+        </form>
+
+        <div id="registerFeedback" class="auth-feedback auth-feedback--error" hidden>
+          <p id="registerFeedbackText" class="auth-feedback__title"></p>
+        </div>
       </div>
     </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const authTitle = document.getElementById("authTitle");
+        const loginPanel = document.getElementById("loginPanel");
+        const registerPanel = document.getElementById("registerPanel");
+        const toRegisterBtn = document.getElementById("toRegisterBtn");
+        const toLoginBtn = document.getElementById("toLoginBtn");
+
+        function switchTo(panel) {
+          const showLogin = panel === "login";
+          loginPanel.classList.toggle("is-active", showLogin);
+          registerPanel.classList.toggle("is-active", !showLogin);
+          authTitle.textContent = showLogin ? "會員登入" : "會員註冊";
+        }
+
+        toRegisterBtn.addEventListener("click", function () {
+          switchTo("register");
+        });
+
+        toLoginBtn.addEventListener("click", function () {
+          switchTo("login");
+        });
+
+        switchTo("login");
+      });
+    </script>
+    <script type="module" src="/js/memberRegister.js"></script>
   </body>
 </html>

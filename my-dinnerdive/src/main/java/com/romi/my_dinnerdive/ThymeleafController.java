@@ -63,10 +63,4 @@ public class ThymeleafController {
         model.addAttribute("restaurants", restaurant);
         return "dinnerHome/createDish";
     }
-
-    /** 使用者註冊頁面 */
-    @GetMapping("/dinnerHome/memberRegister")
-    public String memberRegister() {
-        return "dinnerHome/memberRegister";
-    }
 }

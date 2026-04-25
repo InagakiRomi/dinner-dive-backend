@@ -80,3 +80,41 @@
 .login-page .formContainer .btn-default:active {
   background: linear-gradient(135deg, #cb7b5c, #bf644f);
 }
+
+.auth-panel {
+  display: none;
+}
+
+.auth-panel.is-active {
+  display: block;
+}
+
+.auth-feedback {
+  margin-top: 14px;
+}
+
+.auth-feedback--logout,
+.auth-feedback--error {
+  text-align: center;
+  padding: 14px 14px;
+  border: 1px solid rgba(176, 68, 68, 0.38);
+  border-radius: 12px;
+  background:
+    linear-gradient(140deg, rgba(255, 240, 240, 0.93), rgba(255, 224, 224, 0.9));
+  box-shadow:
+    0 8px 18px rgba(128, 54, 54, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.auth-feedback__title {
+  margin: 0;
+  color: #a33c3c;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.auth-feedback--error .auth-feedback__title {
+  white-space: pre-line;
+}
+
