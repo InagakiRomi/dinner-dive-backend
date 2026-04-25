@@ -7,24 +7,29 @@ const chooseutton = document.getElementById("choose-btn");
 chooseutton.addEventListener("click", chooseRestaurant);
 
 /** 使用者點選「我就吃這間」後執行的邏輯 */
-function chooseRestaurant(){
+async function chooseRestaurant(){
     // 取得目前抽中的餐廳 ID
     const id = getCurrentId();
 
     // 發送 PATCH 請求到後端，通知選擇這家餐廳
-    fetch(`/choose/${id}`, {
+    const response = await fetch(`/choose/${id}`, {
         method: 'PATCH'
-    })
-    .then(response => {
-        if (response.ok) {
-            window.location.href = "/dinnerHome/randomRestaurant";
-            alert("選擇成功！");
-        } else {
-            alert("請先點【抽！】選餐廳");
-        }
-    })
-    .catch(error => {
-        console.error("Error:", error);
-        alert("發生錯誤，請稍後再試！");
+    }).catch((error) => {
+        console.error("選擇餐廳時發生錯誤:", error);
+        alert("系統發生錯誤（網路或連線異常）！");
+        return null;
     });
+
+    if (!response) {
+        return;
+    }
+
+    if (response.ok) {
+        window.location.href = "/dinnerHome/randomRestaurant";
+        alert("選擇成功！");
+    } else if (response.status === 401 || response.status === 403) {
+        alert("請先登入後再選擇餐廳。");
+    } else {
+        alert(`選擇失敗（${response.status}）`);
+    }
 }

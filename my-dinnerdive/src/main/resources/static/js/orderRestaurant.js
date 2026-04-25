@@ -1,97 +1,114 @@
 let restaurantId;
-const container = document.getElementById('dishContainer');
+const container = document.getElementById("dishContainer");
 
 document.addEventListener("DOMContentLoaded", function () {
-    restaurantId = document.body.getAttribute('dataRestaurantId');
+  restaurantId = document.body.getAttribute("dataRestaurantId");
 
-    loadRestaurantInfo(); // 顯示餐廳名稱
-    listDishes();         // 初始載入菜單資料
+  loadRestaurantInfo(); // 顯示餐廳名稱
+  listDishes(); // 初始載入菜單資料
 });
 
 /** 取得餐廳資訊並更新標題 */
 async function loadRestaurantInfo() {
-    fetch(`/restaurants/${restaurantId}`)
-        .then(response => response.json())
-        .then(restaurant => {
-            const title = document.getElementById('restaurantTitle');
-            title.textContent = `${restaurant.restaurantName}`;
-        })
-        .catch(error => {
-            console.error('取得餐廳資訊時出錯:', error);
-        });
+  const response = await fetch(`/restaurants/${restaurantId}`).catch((error) => {
+    console.error("取得餐廳資訊時出錯:", error);
+    return null;
+  });
+
+  if (!response) {
+    return;
+  }
+
+  const restaurant = await response.json();
+  const title = document.getElementById("restaurantTitle");
+  title.textContent = `${restaurant.restaurantName}`;
 }
 
 /** 取得餐點資料 */
 async function listDishes() {
-fetch(`/restaurants/${restaurantId}/dishes`)
-    .then(response => response.json())
-    .then(dishes => {
+  const response = await fetch(`/restaurants/${restaurantId}/dishes`).catch(
+    (error) => {
+      console.error("取得菜單時出錯:", error);
+      return null;
+    },
+  );
 
-        // 清空容器避免重複顯示
-        container.innerHTML = '';
+  if (!response) {
+    return;
+  }
 
-        // 如果資料是空的，就顯示提示文字
-        if (dishes.length === 0) {
-            const emptyMessage = document.createElement('div');
-            emptyMessage.textContent = '請新增餐點';
-            emptyMessage.className = 'noDishMessage';
-            container.appendChild(emptyMessage);
-            return;
-        }
+  const dishes = await response.json();
 
-        dishes.forEach(dish => {
-            // 建立一個新的 div 元素來顯示菜色
-            const dishDiv = document.createElement('div');
-            dishDiv.className = 'dish';
+  // 清空容器避免重複顯示
+  container.innerHTML = "";
 
-            dishDiv.innerHTML = `
+  // 如果資料是空的，就顯示提示文字
+  if (dishes.length === 0) {
+    const emptyMessage = document.createElement("div");
+    emptyMessage.textContent = "請新增餐點";
+    emptyMessage.className = "noDishMessage";
+    container.appendChild(emptyMessage);
+    return;
+  }
+
+  dishes.forEach((dish) => {
+    // 建立一個新的 div 元素來顯示菜色
+    const dishDiv = document.createElement("div");
+    dishDiv.className = "dish";
+
+    dishDiv.innerHTML = `
                 <div class="dishRow">
                     <div class="dishName">${dish.dishName}</div>
                     <div class="dishPrice">$${dish.price}</div>
                     <!-- <button class="updateBtn">修改</button> -->
-                    <button class="deleteBtn delete-btn" data-id="${dish.dishId}">刪除</button>
+                    <button type="button" class="deleteBtn delete-btn" data-id="${dish.dishId}">刪除</button>
                 </div>
             `;
 
-            // 把 div 加到網頁上的 container 中
-            container.appendChild(dishDiv);
-        });
-    })
-    .catch(error => {
-        console.error('取得菜單時出錯:', error);
-    });
+    // 把 div 加到網頁上的 container 中
+    container.appendChild(dishDiv);
+  });
 }
 
 /** 刪除餐點資料的處理邏輯 */
 container.addEventListener("click", deleteDish);
 async function deleteDish(event) {
-    const target = event.target;
-    const deleteButton = target.classList.contains('delete-btn');
-    if (deleteButton) {
-        // 取得要刪除的餐點 ID
-        const id = target.getAttribute('data-id');
+  const deleteButton = event.target.closest(".delete-btn");
+  if (deleteButton && container.contains(deleteButton)) {
+    event.preventDefault();
 
-        // 發送 DELETE 請求刪除資料
-        fetch(`/dishes/${id}`, {
-            method: "DELETE"
-        })
-        .then(response => {
-            if (response.ok) {
-                alert("刪除成功！");
-                listDishes(); // 刪除成功後重新載入列表
-            } else {
-                alert("只有管理員帳號可以刪除餐廳資料！");
-            }
-        })
-        .catch(error => {
-            alert("只有管理員帳號可以刪除餐廳資料！");
-        });
+    // 取得要刪除的餐點 ID
+    const id = deleteButton.getAttribute("data-id");
+
+    // 發送 DELETE 請求刪除資料
+    const response = await fetch(`/dishes/${id}`, {
+      method: "DELETE",
+    }).catch((error) => {
+      console.error("刪除餐點時發生錯誤:", error);
+      alert("系統發生錯誤（網路或連線異常）！");
+      return null;
+    });
+
+    if (!response) {
+      return;
     }
+
+    console.log("DELETE /dishes status:", response.status, "ok:", response.ok);
+
+    if (response.ok) {
+      alert("刪除成功！");
+      await listDishes(); // 刪除成功後重新載入列表
+    } else if (response.status === 401 || response.status === 403) {
+      alert("只有管理員帳號可以刪除餐廳資料！");
+    } else {
+      alert(`刪除失敗（${response.status}）`);
+    }
+  }
 }
 
 /** 導向新增餐點頁面 */
-document.getElementById('addDishBtn').addEventListener("click", addDishPage);
+document.getElementById("addDishBtn").addEventListener("click", addDishPage);
 async function addDishPage() {
-    // 導向新增餐點頁面
-    window.location.href = `/dinnerHome/restaurants/${restaurantId}/dishes/createDish`;
+  // 導向新增餐點頁面
+  window.location.href = `/dinnerHome/restaurants/${restaurantId}/dishes/createDish`;
 }

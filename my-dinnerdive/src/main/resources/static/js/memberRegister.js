@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /** 註冊使用者的主邏輯 */
-function memberRegister(registerForm, showRegisterError) {
+async function memberRegister(registerForm, showRegisterError) {
   const usernameInput = registerForm.querySelector("#registerUsername");
   const passwordInput = registerForm.querySelector("#registerPassword");
 
@@ -50,43 +50,44 @@ function memberRegister(registerForm, showRegisterError) {
   };
 
   // 將資料送出給後端 API
-  fetch("/users/register", {
+  const response = await fetch("/users/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
     },
     body: JSON.stringify(memberJson),
-  })
-    .then(async (response) => {
-      if (response.ok) {
-        alert("註冊成功！");
-        window.location.href = "/dinnerHome";
-      } else {
-        let errorMessage = "註冊失敗，請稍後再試。";
+  }).catch((error) => {
+    console.error("註冊時發生錯誤:", error);
+    showRegisterError("系統發生錯誤（網路或連線異常）！");
+    return null;
+  });
 
-        const errorData = await response
-          .json()
-          .then((data) => data)
-          .catch(() => null);
+  if (!response) {
+    return;
+  }
 
-        if (typeof errorData?.error === "string" && errorData.error.trim()) {
-          errorMessage = errorData.error;
-        } else if (errorData && typeof errorData === "object") {
-          // 驗證錯誤會是欄位對應訊息的 JSON，合併成單一提示字串
-          const fieldErrors = Object.values(errorData).filter(
-            (message) => typeof message === "string" && message.trim(),
-          );
+  if (response.ok) {
+    alert("註冊成功！");
+    window.location.href = "/dinnerHome";
+    return;
+  }
 
-          if (fieldErrors.length > 0) {
-            errorMessage = fieldErrors.join("\n");
-          }
-        }
+  let errorMessage = "註冊失敗，請稍後再試。";
+  const errorData = await response.json().catch(() => null);
 
-        showRegisterError(errorMessage);
-      }
-    })
-    .catch(() => {
-      showRegisterError("系統發生錯誤！");
-    });
+  if (typeof errorData?.error === "string" && errorData.error.trim()) {
+    errorMessage = errorData.error;
+  } else if (errorData && typeof errorData === "object") {
+    // 驗證錯誤會是欄位對應訊息的 JSON，合併成單一提示字串
+    const fieldErrors = Object.values(errorData).filter(
+      (message) => typeof message === "string" && message.trim(),
+    );
+
+    if (fieldErrors.length > 0) {
+      errorMessage = fieldErrors.join("\n");
+    }
+  }
+
+  showRegisterError(errorMessage);
 }

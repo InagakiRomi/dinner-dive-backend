@@ -91,6 +91,12 @@
 
 .auth-feedback {
   margin-top: 14px;
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+
+.auth-feedback--fade-out {
+  opacity: 0;
 }
 
 .auth-feedback--logout,

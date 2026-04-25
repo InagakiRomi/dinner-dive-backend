@@ -83,7 +83,25 @@ async function listRestaurant(){
     const url = `/restaurants?${params.toString()}`;
 
     // 發送 GET 請求向後端查資料
-    const response = await fetch(url);
+    const response = await fetch(url).catch((error) => {
+        console.error("查詢餐廳時發生錯誤:", error);
+        alert("系統發生錯誤（網路或連線異常）！");
+        return null;
+    });
+
+    if (!response) {
+        return;
+    }
+
+    if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+            alert("請先登入後再查看餐廳資料。");
+        } else {
+            alert(`查詢餐廳失敗（${response.status}）`);
+        }
+        return;
+    }
+
     const result = await response.json();
 
     // 從回應中取得分頁資訊
@@ -141,22 +159,32 @@ tableBody.addEventListener('click', deleteRestaurant);
 
 /** 根刪除餐廳資料的處理邏輯 */
 async function deleteRestaurant(event) {
-    const deleteButton = event.target.classList.contains('delete-btn');
+    const deleteButton = event.target.closest(".delete-btn");
 
-    if (deleteButton) {
-        const id = event.target.getAttribute('data-id');
+    if (deleteButton && tableBody.contains(deleteButton)) {
+        event.preventDefault();
+        const id = deleteButton.getAttribute("data-id");
 
         // 發送 DELETE 請求刪除資料
-        fetch(`/restaurants/${id}`, {
+        const response = await fetch(`/restaurants/${id}`, {
             method: "DELETE"
-        })
-        .then(response => {
-            if (response.ok) {
-                alert("刪除成功！");
-                listRestaurant(); // 刪除成功後重新載入列表
-            } else {
-                alert("只有管理員帳號可以刪除餐廳資料！");
-            }
+        }).catch((error) => {
+            console.error("刪除餐廳時發生錯誤:", error);
+            alert("系統發生錯誤（網路或連線異常）！");
+            return null;
         });
+
+        if (!response) {
+            return;
+        }
+
+        if (response.ok) {
+            alert("刪除成功！");
+            await listRestaurant(); // 刪除成功後重新載入列表
+        } else if (response.status === 401 || response.status === 403) {
+            alert("只有管理員帳號可以刪除餐廳資料！");
+        } else {
+            alert(`刪除失敗（${response.status}）`);
+        }
     }
 };

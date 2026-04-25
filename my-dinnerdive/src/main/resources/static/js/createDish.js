@@ -20,7 +20,7 @@ function redirectToDishesPage(restaurantId) {
 }
 
 /** 使用者「新增餐廳」後執行的邏輯 */
-function createDish(){
+async function createDish(){
     // 整理表單輸入資料，合併成一個 JSON 格式的物件
     var dishJson = {
         ...getAll.getRestaurantId(),
@@ -29,22 +29,28 @@ function createDish(){
     }
 
     // 使用 fetch 向後端發送 POST 請求，新增一筆餐點資料
-    fetch('/dishes', {
+    const response = await fetch('/dishes', {
         method: "POST",
         headers: getAll.getHeaders(),          // 設定標頭，例如 Content-Type: application/json
         body: JSON.stringify(dishJson)  // 將 JavaScript 物件轉為 JSON 字串送出
-    })
-    .then((response) => {
-        if (response.ok) {
-            alert("餐點新增成功！");
-            redirectToDishesPage(dishJson.restaurantId);
-        } else {
-            alert("新增失敗，請再試一次");
-        }
-    })
-    .catch((error) => {
-        alert("系統發生錯誤！");
-    })
+    }).catch((error) => {
+        console.error("新增餐點時發生錯誤:", error);
+        alert("系統發生錯誤（網路或連線異常）！");
+        return null;
+    });
+
+    if (!response) {
+        return;
+    }
+
+    if (response.ok) {
+        alert("餐點新增成功！");
+        redirectToDishesPage(dishJson.restaurantId);
+    } else if (response.status === 401 || response.status === 403) {
+        alert("請先登入後再新增餐點。");
+    } else {
+        alert(`新增失敗（${response.status}）`);
+    }
 }
 
 /** 從新增餐點回到上一個頁面 */

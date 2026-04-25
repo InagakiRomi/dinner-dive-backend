@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function (){
 })
 
 /** 執行修改餐廳資料邏輯 */
-function updateRestaurant(){
+async function updateRestaurant(){
 
     // 整理所有欄位資料合併成一個 JSON 物件
     var restaurantJson = {
@@ -31,22 +31,27 @@ function updateRestaurant(){
     }
 
     // 呼叫後端 API，更新指定 ID 的餐廳資料
-    fetch(`/restaurants/${getAll.getRestaurantId()}`, {
+    const response = await fetch(`/restaurants/${getAll.getRestaurantId()}`, {
         method: 'PUT',
         headers: getAll.getHeaders(),         // 設定標頭，例如 Content-Type: application/json
         body: JSON.stringify(restaurantJson)  // 將資料物件轉成 JSON 字串
-    })
-    .then(response => {
-        if (response.ok) {
-            // 修改成功後導回餐廳清單頁
-            window.location.href = "/dinnerHome/listRestaurant";
-            alert("修改成功！");
-        } else {
-            alert("修改失敗！請確認資料是否正確");
-        }
-    })
-    .catch(error => {
-        console.error("Error:", error);
-        alert("發生錯誤，請稍後再試！");
+    }).catch((error) => {
+        console.error("修改餐廳時發生錯誤:", error);
+        alert("系統發生錯誤（網路或連線異常）！");
+        return null;
     });
+
+    if (!response) {
+        return;
+    }
+
+    if (response.ok) {
+        // 修改成功後導回餐廳清單頁
+        window.location.href = "/dinnerHome/listRestaurant";
+        alert("修改成功！");
+    } else if (response.status === 401 || response.status === 403) {
+        alert("請先登入後再修改餐廳資料。");
+    } else {
+        alert(`修改失敗（${response.status}）`);
+    }
 }
