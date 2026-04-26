@@ -1,69 +1,9 @@
-form#historyForm {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin: 20px;
-    flex-wrap: wrap;
-}
-
-form#historyForm > div {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
-    margin: 0;
-}
-
-.historyFormActions {
-    margin-left: auto;
-    flex: 0 0 auto;
-    justify-content: flex-end;
-}
-
-form#historyForm select {
-    padding: 6px 12px;
-    font-size: 1em;
-    color: #5c4033;
-    background-color: #fffaf4;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-}
-
 .historyTable th:nth-child(1),
 .historyTable td:nth-child(1) {
     width: 80px;
 }
 
-.historyTable th:nth-child(5),
-.historyTable td:nth-child(5) {
+.historyTable th:nth-child(4),
+.historyTable td:nth-child(4) {
     min-width: 180px;
-}
-
-@media (max-width: 1024px) {
-    form#historyForm {
-        margin: 16px;
-    }
-}
-
-@media (max-width: 767px) {
-    form#historyForm {
-        margin: 12px;
-    }
-
-    form#historyForm > div {
-        gap: 10px;
-        width: 100%;
-    }
-
-    .historyFormActions {
-        margin-left: 0;
-        justify-content: space-between;
-    }
-
-    form#historyForm label,
-    form#historyForm select,
-    form#historyForm .btn {
-        width: 100%;
-    }
 }

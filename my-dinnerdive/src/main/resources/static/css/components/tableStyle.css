@@ -61,15 +61,30 @@
     text-align: left !important;
 }
 
-/* ==== 表單區塊樣式 ==== */
-form#listForm > div {
+/* ==== 列表/歷史頁查詢列共用樣式 ==== */
+form#listForm > div,
+form#historyForm > div {
     display: flex;            /* 使用 Flex 排版 */
     flex-wrap: wrap;          /* 超出寬度時自動換行 */
     align-items: center;      /* 垂直置中對齊 */
     gap: 12px;                /* 元素之間間距 */
+}
+
+/* ==== 餐廳列表頁的查詢區塊位置 ==== */
+form#listForm > div {
     width: calc(100% - 40px); /* 讓按鈕可對齊到畫面右側 */
     margin: 20px;             /* 左右各保留一致邊距 */
     max-width: none;          /* 不限制寬度，避免右側對齊受限 */
+}
+
+/* ==== 歷史頁查詢區塊（第一列排序欄 + 第二列操作按鈕）==== */
+form#historyForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 20px;
+    flex-wrap: wrap;
 }
 
 .list-form-add-btn {
@@ -77,7 +92,8 @@ form#listForm > div {
 }
 
 form#listForm input[type="text"],
-form#listForm select {
+form#listForm select,
+form#historyForm select {
     padding: 6px 12px;           /* 內距設定 */
     font-size: 1em;              /* 字體大小一致化 */
     color: #5c4033;            /* 字體顏色為深咖啡色 */
@@ -95,6 +111,13 @@ form#listForm select {
     margin: 30px 0;            /* 區塊上下間距 */
     font-weight: bold;         /* 字體加粗 */
     color: #5c4033;          /* 文字顏色 */
+}
+
+.listFormActions,
+.historyFormActions {
+    margin-left: auto;
+    flex: 0 0 auto;
+    justify-content: flex-end;
 }
 
 /* ==== 操作按鈕群組區塊，自動換行 ==== */
@@ -122,6 +145,10 @@ form#listForm select {
         margin: 16px;
     }
 
+    form#historyForm {
+        margin: 16px;
+    }
+
     .table th,
     .table td {
         font-size: 0.95rem;
@@ -136,20 +163,34 @@ form#listForm select {
 
 /* ==== 手機 RWD ==== */
 @media (max-width: 767px) {
-    form#listForm > div {
+    form#listForm > div,
+    form#historyForm > div {
         margin: 12px;
         gap: 10px;
+        width: 100%;
     }
 
     form#listForm label,
     form#listForm input[type="text"],
     form#listForm select,
+    form#historyForm label,
+    form#historyForm select,
+    form#historyForm .btn,
     form#listForm .btn {
         width: 100%;
     }
 
     .list-form-add-btn {
         margin-left: 0;
+    }
+
+    form#historyForm {
+        margin: 12px;
+    }
+
+    .historyFormActions {
+        margin-left: 0;
+        justify-content: space-between;
     }
 
     .table {

@@ -1,63 +1,58 @@
-import getAll from './modules/dishDataBuilder.js';
+import {
+  bindFormSubmit,
+  getInputValue,
+  getNumberInputValue,
+  isAuthError,
+  redirectTo,
+  request,
+} from "./modules/appShared.js";
 
-document.addEventListener("DOMContentLoaded", function (){
-    const preventForm = document.getElementById("createForm");
-    // 當使用者點擊按鈕時，執行 preventFormSubmit 函式
-    preventForm.addEventListener("submit", preventFormSubmit);
+document.addEventListener("DOMContentLoaded", () => {
+  // 攔截表單 submit，改為 AJAX 新增餐點。
+  bindFormSubmit("createForm", createDish);
 
-    // 攔截表單提交事件，避免頁面重新整理
-    function preventFormSubmit(event) {
-        // 阻止表單的預設提交動作
-        event.preventDefault();
-        // 改為手動觸發送出資料的函式
-        createDish();
-    }
-})
+  // 返回按鈕：回到目前餐廳的菜單列表。
+  const previousButton = document.getElementById("previousBtn");
+  previousButton?.addEventListener("click", previousPage);
+});
 
-/** 導向餐點列表頁面 */
+/** 導向指定餐廳的菜單頁。 */
 function redirectToDishesPage(restaurantId) {
-    window.location.href = `/dinnerHome/restaurants/${restaurantId}/dishes`;
+  redirectTo(`/dinnerHome/restaurants/${restaurantId}/dishes`);
 }
 
-/** 使用者「新增餐廳」後執行的邏輯 */
-async function createDish(){
-    // 整理表單輸入資料，合併成一個 JSON 格式的物件
-    var dishJson = {
-        ...getAll.getRestaurantId(),
-        ...getAll.getPrice(),
-        ...getAll.getDishName()
-    }
+/** 送出新增餐點資料。 */
+async function createDish() {
+  // 整理表單欄位為 API 所需 JSON。
+  const restaurantId = getInputValue("restaurantId");
+  const dishJson = {
+    restaurantId,
+    price: getNumberInputValue("price", 0),
+    dishName: getInputValue("dishName"),
+  };
 
-    // 使用 fetch 向後端發送 POST 請求，新增一筆餐點資料
-    const response = await fetch('/dishes', {
-        method: "POST",
-        headers: getAll.getHeaders(),          // 設定標頭，例如 Content-Type: application/json
-        body: JSON.stringify(dishJson)  // 將 JavaScript 物件轉為 JSON 字串送出
-    }).catch((error) => {
-        console.error("新增餐點時發生錯誤:", error);
-        window.showAppModal("系統發生錯誤（網路或連線異常）！");
-        return null;
+  // 呼叫新增餐點 API。
+  const response = await request("/dishes", {
+    method: "POST",
+    jsonBody: dishJson,
+  });
+  if (!response) {
+    return;
+  }
+
+  if (response.ok) {
+    window.showAppModal("餐點新增成功！", () => {
+      redirectToDishesPage(restaurantId);
     });
-
-    if (!response) {
-        return;
-    }
-
-    if (response.ok) {
-        window.showAppModal("餐點新增成功！", () => {
-            redirectToDishesPage(dishJson.restaurantId);
-        });
-    } else if (response.status === 401 || response.status === 403) {
-        window.showAppModal("請先登入後再新增餐點。");
-    } else {
-        window.showAppModal(`新增失敗（${response.status}）`);
-    }
+  } else if (isAuthError(response.status)) {
+    window.showAppModal("請先登入後再新增餐點。");
+  } else {
+    window.showAppModal(`新增失敗（${response.status}）`);
+  }
 }
 
-/** 從新增餐點回到上一個頁面 */
-document.getElementById('previousBtn').addEventListener("click", previousPage);
-async function previousPage() {
-    // 導向新增餐點頁面
-    const { restaurantId } = getRestaurantId();
-    redirectToDishesPage(restaurantId);
+/** 返回目前餐廳菜單頁。 */
+function previousPage() {
+  const restaurantId = getInputValue("restaurantId");
+  redirectToDishesPage(restaurantId);
 }

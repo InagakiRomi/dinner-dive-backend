@@ -21,7 +21,7 @@
     <!-- 可在其他模板中引用返回餐廳一覽的按鈕 -->
     <th:block th:fragment="listButton">
         <button class="btn btn-yellow btn-top-left"
-                onclick="location.href='/dinnerHome/listRestaurant'">
+                data-route="/dinnerHome/listRestaurant">
                 返回餐廳一覽
         </button>
     </th:block>

@@ -1,21 +1,24 @@
 import { getCurrentId } from "./randomRestaurant.js";
+import { isAuthError, redirectTo, request } from "./modules/appShared.js";
 
-const chooseutton = document.getElementById("choose-btn");
+// 「就決定選這間」按鈕。
+const chooseButton = document.getElementById("choose-btn");
 // 當使用者點擊按鈕時，執行 chooseRestaurant 函式
-chooseutton.addEventListener("click", chooseRestaurant);
+chooseButton.addEventListener("click", chooseRestaurant);
 
 /** 使用者點選「我就吃這間」後執行的邏輯 */
 async function chooseRestaurant() {
   // 取得目前抽中的餐廳 ID
   const id = getCurrentId();
+  if (!id) {
+    // 尚未抽籤時，不允許直接送出選擇。
+    window.showAppModal("請先開始抽選餐廳。");
+    return;
+  }
 
   // 發送 PATCH 請求到後端，通知選擇這家餐廳
-  const response = await fetch(`/choose/${id}`, {
+  const response = await request(`/choose/${id}`, {
     method: "PATCH",
-  }).catch((error) => {
-    console.error("選擇餐廳時發生錯誤:", error);
-    window.showAppModal("系統發生錯誤（網路或連線異常）！");
-    return null;
   });
 
   if (!response) {
@@ -24,9 +27,9 @@ async function chooseRestaurant() {
 
   if (response.ok) {
     window.showAppModal("選擇成功！", () => {
-      window.location.href = "/dinnerHome/randomRestaurant";
+      redirectTo("/dinnerHome/randomRestaurant");
     });
-  } else if (response.status === 401 || response.status === 403) {
+  } else if (isAuthError(response.status)) {
     window.showAppModal("請先登入後再選擇餐廳。");
   } else if (response.status === 400) {
     window.showAppModal(`請先開始抽選餐廳。`);

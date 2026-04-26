@@ -1,25 +1,29 @@
+import { isAuthError, redirectTo, request } from "./modules/appShared.js";
+
+// 目前頁面對應的餐廳編號（由 body data attribute 帶入）。
 let restaurantId;
+// 菜單渲染容器。
 const container = document.getElementById("dishContainer");
+// 新增餐點按鈕。
 const addDishButton = document.getElementById("addDishBtn");
 
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", async () => {
   restaurantId = document.body.getAttribute("dataRestaurantId");
 
-  const restaurantExists = await loadRestaurantInfo(); // 顯示餐廳名稱
+  // 先確認餐廳存在，再載入餐點資料。
+  const restaurantExists = await loadRestaurantInfo();
   if (!restaurantExists) {
     showRestaurantNotFound();
     return;
   }
 
-  listDishes(); // 初始載入菜單資料
+  await listDishes();
 });
 
 /** 取得餐廳資訊並更新標題 */
 async function loadRestaurantInfo() {
-  const response = await fetch(`/restaurants/${restaurantId}`).catch((error) => {
-    console.error("取得餐廳資訊時出錯:", error);
-    return null;
-  });
+  // 讀取餐廳基本資訊，主要用來顯示標題。
+  const response = await request(`/restaurants/${restaurantId}`);
 
   if (!response) {
     return false;
@@ -38,12 +42,8 @@ async function loadRestaurantInfo() {
 
 /** 取得餐點資料 */
 async function listDishes() {
-  const response = await fetch(`/restaurants/${restaurantId}/dishes`).catch(
-    (error) => {
-      console.error("取得菜單時出錯:", error);
-      return null;
-    },
-  );
+  // 讀取指定餐廳的菜單資料。
+  const response = await request(`/restaurants/${restaurantId}/dishes`);
 
   if (!response) {
     return;
@@ -53,6 +53,8 @@ async function listDishes() {
     console.error("取得菜單失敗，status:", response.status);
     if (response.status === 404) {
       showRestaurantNotFound();
+    } else if (isAuthError(response.status)) {
+      window.showAppModal("請先登入後再查看餐點資料。");
     }
     return;
   }
@@ -101,6 +103,7 @@ function showRestaurantNotFound() {
   notFoundMessage.className = "noDishMessage";
   container.appendChild(notFoundMessage);
 
+  // 查無餐廳時隱藏「新增餐點」按鈕，避免導向無效頁面。
   if (addDishButton) {
     addDishButton.style.display = "none";
   }
@@ -114,6 +117,7 @@ async function deleteDish(event) {
     event.preventDefault();
 
     // 取得要刪除的餐點 ID
+    // 刪除前先由使用者二次確認。
     const id = deleteButton.getAttribute("data-id");
     const shouldDelete = await window.showAppConfirm("確定要刪除這筆餐點嗎？");
     if (!shouldDelete) {
@@ -121,24 +125,18 @@ async function deleteDish(event) {
     }
 
     // 發送 DELETE 請求刪除資料
-    const response = await fetch(`/dishes/${id}`, {
+    const response = await request(`/dishes/${id}`, {
       method: "DELETE",
-    }).catch((error) => {
-      console.error("刪除餐點時發生錯誤:", error);
-      window.showAppModal("系統發生錯誤（網路或連線異常）！");
-      return null;
     });
 
     if (!response) {
       return;
     }
 
-    console.log("DELETE /dishes status:", response.status, "ok:", response.ok);
-
     if (response.ok) {
       window.showAppModal("刪除成功！");
-      await listDishes(); // 刪除成功後重新載入列表
-    } else if (response.status === 401 || response.status === 403) {
+      await listDishes();
+    } else if (isAuthError(response.status)) {
       window.showAppModal("只有管理員帳號可以刪除餐廳資料！");
     } else {
       window.showAppModal(`刪除失敗（${response.status}）`);
@@ -150,7 +148,7 @@ async function deleteDish(event) {
 if (addDishButton) {
   addDishButton.addEventListener("click", addDishPage);
 }
-async function addDishPage() {
-  // 導向新增餐點頁面
-  window.location.href = `/dinnerHome/restaurants/${restaurantId}/dishes/createDish`;
+function addDishPage() {
+  // 導向目前餐廳的新增餐點頁。
+  redirectTo(`/dinnerHome/restaurants/${restaurantId}/dishes/createDish`);
 }

@@ -128,62 +128,7 @@
       </div>
     </div>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const currentUrl = new URL(window.location.href);
-        const logoutFeedback = document.getElementById("logoutFeedback");
-        const loginErrorMessage = document.getElementById("loginErrorMessage");
-
-        if (loginErrorMessage) {
-          const messageText = loginErrorMessage.textContent.trim();
-          if (messageText) {
-            window.showAppModal(messageText);
-          }
-          loginErrorMessage.remove();
-        }
-
-        if (logoutFeedback) {
-          setTimeout(function () {
-            logoutFeedback.classList.add("auth-feedback--fade-out");
-            setTimeout(function () {
-              logoutFeedback.remove();
-            }, 600);
-          }, 5000);
-        }
-
-        if (currentUrl.searchParams.has("logout")) {
-          currentUrl.searchParams.delete("logout");
-          const nextUrl =
-            currentUrl.pathname +
-            (currentUrl.search ? currentUrl.search : "") +
-            currentUrl.hash;
-          window.history.replaceState({}, "", nextUrl);
-        }
-
-        const authTitle = document.getElementById("authTitle");
-        const loginPanel = document.getElementById("loginPanel");
-        const registerPanel = document.getElementById("registerPanel");
-        const toRegisterBtn = document.getElementById("toRegisterBtn");
-        const toLoginBtn = document.getElementById("toLoginBtn");
-
-        function switchTo(panel) {
-          const showLogin = panel === "login";
-          loginPanel.classList.toggle("is-active", showLogin);
-          registerPanel.classList.toggle("is-active", !showLogin);
-          authTitle.textContent = showLogin ? "會員登入" : "會員註冊";
-        }
-
-        toRegisterBtn.addEventListener("click", function () {
-          switchTo("register");
-        });
-
-        toLoginBtn.addEventListener("click", function () {
-          switchTo("login");
-        });
-
-        switchTo("login");
-      });
-    </script>
+    <script type="module" src="/js/indexAuthPage.js"></script>
     <script type="module" src="/js/memberRegister.js"></script>
   </body>
 </html>

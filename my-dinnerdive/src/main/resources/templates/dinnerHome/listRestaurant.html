@@ -55,7 +55,7 @@
             <button
                 type="button"
                 class="btn btn-green list-form-add-btn"
-                onclick="window.location.href='/dinnerHome/createRestaurant'">
+                data-route="/dinnerHome/createRestaurant">
                 新增餐廳
             </button>
         </div>
@@ -90,6 +90,6 @@
     </div>
 
     <!-- 處理資料庫匯入列表裡邏輯 -->
-    <script src="/js/listRestaurant.js"></script>
+    <script type="module" src="/js/listRestaurant.js"></script>
 </body>
 </html>

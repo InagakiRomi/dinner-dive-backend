@@ -1,57 +1,61 @@
-import getAll from './modules/restaurantDataBuilder.js';
+import {
+  bindFormSubmit,
+  getInputValue,
+  getNumberInputValue,
+  isAuthError,
+  redirectTo,
+  request,
+} from "./modules/appShared.js";
 
-document.addEventListener("DOMContentLoaded", function (){
-    //同步餐廳分類資料庫
-    const categorySelect = document.getElementById("category");
-    const selectedValue = categorySelect.getAttribute("value");
-    if (selectedValue) {
-        categorySelect.value = selectedValue;
-    }
+document.addEventListener("DOMContentLoaded", () => {
+  // 同步後端帶入的分類預設值，避免 select 顯示錯誤。
+  syncCategoryValue();
+  // 攔截表單 submit，改為 AJAX 更新資料。
+  bindFormSubmit("updateForm", updateRestaurant);
+});
 
-    const preventForm = document.getElementById("updateForm");
-    preventForm.addEventListener("submit", preventFormSubmit);
+/** 同步分類欄位的初始值（從 th:value 帶入）。 */
+function syncCategoryValue() {
+  const categorySelect = document.getElementById("category");
+  if (!categorySelect) {
+    return;
+  }
 
-    function preventFormSubmit(event) {
-        event.preventDefault(); // 防止瀏覽器預設的送出行為（會刷新頁面）
-        updateRestaurant();     // 執行自定義的更新函式
-    }
-})
+  const selectedValue = categorySelect.getAttribute("value");
+  if (selectedValue) {
+    categorySelect.value = selectedValue;
+  }
+}
 
-/** 執行修改餐廳資料邏輯 */
-async function updateRestaurant(){
+/** 送出餐廳更新資料。 */
+async function updateRestaurant() {
+  // 讀取隱藏欄位 ID，並整理其他欄位成 JSON。
+  const restaurantId = getInputValue("restaurantId");
+  const restaurantJson = {
+    restaurantName: getInputValue("restaurantName"),
+    category: getInputValue("category"),
+    visitedCount: getNumberInputValue("visitedCount", 0),
+    lastSelectedAt: getInputValue("lastSelectedAt"),
+    note: getInputValue("note"),
+    imageUrl: getInputValue("imageUrl"),
+  };
 
-    // 整理所有欄位資料合併成一個 JSON 物件
-    var restaurantJson = {
-        ...getAll.getRestaurantName(),
-        ...getAll.getCategory(),
-        ...getAll.getVisitedCount(),
-        ...getAll.getLastSelectedAt(),
-        ...getAll.getNote(),
-        ...getAll.getImageUrl()
-    }
+  // 呼叫更新 API。
+  const response = await request(`/restaurants/${restaurantId}`, {
+    method: "PUT",
+    jsonBody: restaurantJson,
+  });
+  if (!response) {
+    return;
+  }
 
-    // 呼叫後端 API，更新指定 ID 的餐廳資料
-    const response = await fetch(`/restaurants/${getAll.getRestaurantId()}`, {
-        method: 'PUT',
-        headers: getAll.getHeaders(),         // 設定標頭，例如 Content-Type: application/json
-        body: JSON.stringify(restaurantJson)  // 將資料物件轉成 JSON 字串
-    }).catch((error) => {
-        console.error("修改餐廳時發生錯誤:", error);
-        window.showAppModal("系統發生錯誤（網路或連線異常）！");
-        return null;
+  if (response.ok) {
+    window.showAppModal("修改成功！", () => {
+      redirectTo("/dinnerHome/listRestaurant");
     });
-
-    if (!response) {
-        return;
-    }
-
-    if (response.ok) {
-        window.showAppModal("修改成功！", () => {
-            window.location.href = "/dinnerHome/listRestaurant";
-        });
-    } else if (response.status === 401 || response.status === 403) {
-        window.showAppModal("請先登入後再修改餐廳資料。");
-    } else {
-        window.showAppModal(`修改失敗（${response.status}）`);
-    }
+  } else if (isAuthError(response.status)) {
+    window.showAppModal("請先登入後再修改餐廳資料。");
+  } else {
+    window.showAppModal(`修改失敗（${response.status}）`);
+  }
 }

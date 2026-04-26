@@ -1,3 +1,11 @@
+import {
+  createQueryString,
+  getInputValue,
+  isAuthError,
+  request,
+} from "./modules/appShared.js";
+
+// 目前抽到的餐廳 ID（提供給 chooseRestaurant 使用）。
 let currentRestaurantId;
 
 const randomButton = document.getElementById("random-btn");
@@ -5,27 +13,19 @@ randomButton.addEventListener("click", randomRestaurant);
 
 /** 點擊「抽！」時執行的邏輯 */
 async function randomRestaurant() {
-    const category = document.getElementById("categoryLabel").value; // 抽餐廳時選擇的類別
-    const params = new URLSearchParams(); // 建立查詢參數物件
-    if (category){
-        params.append("category", category); // 若有選類別，加入參數
-    }
-
-    const url = `/random?${params.toString()}`; // 組成 API 請求網址
-
-    // 向後端發送 GET 請求，取得隨機餐廳資訊
-    const response = await fetch(url).catch((error) => {
-        console.error("抽餐廳時發生錯誤:", error);
-        window.showAppModal("系統發生錯誤（網路或連線異常）！");
-        return null;
+    // 將目前篩選條件組成 query string。
+    const query = createQueryString({
+      category: getInputValue("categoryLabel"),
     });
+    // 呼叫隨機抽餐廳 API。
+    const response = await request(`/random?${query}`);
 
     if (!response) {
         return;
     }
 
     if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
+        if (isAuthError(response.status)) {
             window.showAppModal("請先登入後再使用抽餐廳功能。");
         } else {
             window.showAppModal(`取得餐廳失敗（${response.status}）`);
@@ -70,12 +70,9 @@ resetButton.addEventListener("change", resetRandom);
 
 /** 當使用者改變類別下拉選單時，重置抽選紀錄 */
 async function resetRandom() {
-    const response = await fetch('/clearRandom', {
+    // 切換類別時重置本輪抽選紀錄。
+    const response = await request('/clearRandom', {
         method: 'POST' // 通知後端清除目前的抽選紀錄
-    }).catch((error) => {
-        console.error("重置抽籤時發生錯誤:", error);
-        window.showAppModal("系統發生錯誤（網路或連線異常）！");
-        return null;
     });
 
     if (!response) {
@@ -84,7 +81,7 @@ async function resetRandom() {
 
     if (response.ok) {
         window.showAppModal("抽籤紀錄已清除，開始新的抽選！");
-    } else if (response.status === 401 || response.status === 403) {
+    } else if (isAuthError(response.status)) {
         window.showAppModal("請先登入後再重置抽籤紀錄。");
     } else {
         window.showAppModal(`重抽失敗（${response.status}）`);
