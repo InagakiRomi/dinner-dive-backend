@@ -10,12 +10,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
 /** 註冊使用者的主邏輯 */
 async function memberRegister(registerForm) {
+  const submitButton = registerForm.querySelector('button[type="submit"]');
+  const originalSubmitButtonText = submitButton?.textContent || "註冊";
+
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = "註冊中...";
+    submitButton.setAttribute("aria-busy", "true");
+  }
+
   // 從註冊表單讀取帳號、密碼欄位。
   const usernameInput = registerForm.querySelector("#registerUsername");
   const passwordInput = registerForm.querySelector("#registerPassword");
 
   if (!usernameInput || !passwordInput) {
     window.showAppModal("註冊欄位讀取失敗，請重新整理頁面後再試一次。");
+    resetRegisterButton();
     return;
   }
 
@@ -32,6 +42,7 @@ async function memberRegister(registerForm) {
   });
 
   if (!response) {
+    resetRegisterButton();
     return;
   }
 
@@ -60,4 +71,14 @@ async function memberRegister(registerForm) {
   }
 
   window.showAppModal(errorMessage);
+  resetRegisterButton();
+
+  function resetRegisterButton() {
+    if (!submitButton) {
+      return;
+    }
+    submitButton.disabled = false;
+    submitButton.textContent = originalSubmitButtonText;
+    submitButton.removeAttribute("aria-busy");
+  }
 }

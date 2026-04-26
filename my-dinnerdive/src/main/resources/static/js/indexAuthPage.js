@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupLogoutFeedback();
   clearLogoutQueryParam();
   setupAuthPanelSwitch();
+  setupLoginSubmittingState();
 });
 
 /** 若網址帶有登入錯誤訊息區塊，讀取後以彈窗顯示。 */
@@ -78,4 +79,32 @@ function setupAuthPanelSwitch() {
   });
 
   switchTo("login");
+}
+
+/** 登入送出時切換按鈕為「登入中...」，避免重複提交。 */
+function setupLoginSubmittingState() {
+  const loginForm = document.querySelector("#loginPanel form");
+  if (!loginForm) {
+    return;
+  }
+
+  const loginSubmitButton = loginForm.querySelector('button[type="submit"]');
+  if (!loginSubmitButton) {
+    return;
+  }
+
+  const originalButtonText = loginSubmitButton.textContent;
+  loginForm.addEventListener("submit", () => {
+    loginSubmitButton.disabled = true;
+    loginSubmitButton.textContent = "登入中...";
+    loginSubmitButton.setAttribute("aria-busy", "true");
+  });
+
+  // 若使用者切換到註冊再切回登入，仍保持可用且文字正確。
+  const toLoginBtn = document.getElementById("toLoginBtn");
+  toLoginBtn?.addEventListener("click", () => {
+    loginSubmitButton.disabled = false;
+    loginSubmitButton.textContent = originalButtonText || "登入";
+    loginSubmitButton.removeAttribute("aria-busy");
+  });
 }
