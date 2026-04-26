@@ -10,8 +10,11 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.test.context.support.WithMockUser;
+import jakarta.servlet.ServletException;
+import jakarta.validation.ConstraintViolationException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.romi.my_dinnerdive.constant.RestaurantCategory;
 import com.romi.my_dinnerdive.dto.RestaurantRequest;
 
@@ -20,6 +23,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,7 +41,7 @@ public class RestaurantControllerTest {
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
-    void getRestaurant_success() throws Exception{
+    void shouldReturnRestaurantWhenIdExists() throws Exception{
         RequestBuilder requestBuilder = MockMvcRequestBuilders
         .get("/restaurants/{restaurantId}", 1);
 
@@ -54,7 +59,7 @@ public class RestaurantControllerTest {
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
-    public void getProduct_notFound() throws Exception {
+    public void shouldReturnNotFoundWhenRestaurantIdDoesNotExist() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/restaurants/{restaurants}", 20000);
 
@@ -62,10 +67,19 @@ public class RestaurantControllerTest {
                 .andExpect(status().is(404));
     }
 
+    @Test
+    void shouldRedirectToLoginWhenGetRestaurantWithoutAuthentication() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/restaurants/{restaurantId}", 1);
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().is3xxRedirection());
+    }
+
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Transactional
     @Test
-    void createRestaurant_success() throws Exception{
+    void shouldCreateRestaurantWhenRequestIsValid() throws Exception{
         RestaurantRequest restaurantRequest = new RestaurantRequest();
         restaurantRequest.setRestaurantName("都不NONO");
         restaurantRequest.setCategory(RestaurantCategory.DRINK);
@@ -94,7 +108,7 @@ public class RestaurantControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Transactional
     @Test
-    void updateRestaurant_success() throws Exception{
+    void shouldUpdateRestaurantWhenRestaurantExists() throws Exception{
         RestaurantRequest restaurantRequest = new RestaurantRequest();
         restaurantRequest.setRestaurantName("好棒棒喔");
         restaurantRequest.setCategory(RestaurantCategory.SNACK);
@@ -123,7 +137,7 @@ public class RestaurantControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Transactional
     @Test
-    public void updateProduct_productNotFound() throws Exception {
+    public void shouldReturnNotFoundWhenUpdateRestaurantDoesNotExist() throws Exception {
         RestaurantRequest restaurantRequest = new RestaurantRequest();
         restaurantRequest.setRestaurantName("好棒棒喔");
         restaurantRequest.setCategory(RestaurantCategory.SNACK);
@@ -146,7 +160,7 @@ public class RestaurantControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Transactional
     @Test
-    public void deleteProduct_success() throws Exception {
+    public void shouldDeleteRestaurantWhenAdminDeletesExistingRestaurant() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .delete("/restaurants/{restaurantId}", 5);
 
@@ -157,7 +171,7 @@ public class RestaurantControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Transactional
     @Test
-    public void deleteProduct_deleteNonExistingProduct() throws Exception {
+    public void shouldReturnNoContentWhenAdminDeletesNonExistingRestaurant() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .delete("/restaurants/{restaurantId}", 20000);
 
@@ -168,7 +182,7 @@ public class RestaurantControllerTest {
     // 查詢餐廳列表
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
-    public void getProducts() throws Exception {
+    public void shouldReturnRestaurantPageWhenQueryWithoutFilters() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/restaurants");
 
@@ -183,7 +197,7 @@ public class RestaurantControllerTest {
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
-    public void getProducts_filtering() throws Exception {
+    public void shouldReturnFilteredRestaurantsWhenSearchAndCategoryProvided() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/restaurants")
                 .param("search", "奶")
@@ -199,7 +213,7 @@ public class RestaurantControllerTest {
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
-    public void getProducts_sorting() throws Exception {
+    public void shouldReturnSortedRestaurantsWhenOrderByAndSortProvided() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/restaurants")
                 .param("orderBy", "restaurant_id")
@@ -221,7 +235,7 @@ public class RestaurantControllerTest {
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
-    public void getProducts_pagination() throws Exception {
+    public void shouldReturnPagedRestaurantsWhenLimitAndOffsetProvided() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/restaurants")
                 .param("limit", "3")
@@ -242,7 +256,7 @@ public class RestaurantControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Transactional
     @Test
-    void chooseRestaurant_success() throws Exception{
+    void shouldChooseRestaurantWhenRestaurantExists() throws Exception{
         RestaurantRequest restaurantRequest = new RestaurantRequest();
         restaurantRequest.setRestaurantName("乾乾拌拌");
         restaurantRequest.setCategory(RestaurantCategory.MAIN);
@@ -271,7 +285,7 @@ public class RestaurantControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Transactional
     @Test
-    void getRestaurantHistories_success() throws Exception {
+    void shouldReturnHistoriesAfterChooseRestaurant() throws Exception {
         RequestBuilder chooseRequest = MockMvcRequestBuilders
                 .patch("/choose/{restaurantId}", 1)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -290,5 +304,160 @@ public class RestaurantControllerTest {
                 .andExpect(jsonPath("$.results[0].restaurantId", equalTo(1)))
                 .andExpect(jsonPath("$.results[0].restaurantName", equalTo("一番湯屋")))
                 .andExpect(jsonPath("$.results[0].selectedAt", notNullValue()));
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Test
+    void shouldThrowValidationWhenGetRestaurantsWithNegativeLimit() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/restaurants")
+                .param("limit", "-1");
+
+        Exception ex = assertThrows(ServletException.class, () -> mockMvc.perform(requestBuilder));
+        assertTrue(ex.getCause() instanceof ConstraintViolationException);
+        assertTrue(ex.getCause().getMessage().contains("getRestaurants.limit"));
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Test
+    void shouldReturnBadRequestWhenCreateRestaurantWithoutName() throws Exception {
+        RestaurantRequest restaurantRequest = new RestaurantRequest();
+        restaurantRequest.setCategory(RestaurantCategory.MAIN);
+        restaurantRequest.setImageUrl("http://test.com/no-name");
+        restaurantRequest.setNote("缺少店名測試");
+
+        String json = objectMapper.writeValueAsString(restaurantRequest);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/restaurants")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.restaurantName", notNullValue()));
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Test
+    void shouldReturnBadRequestWhenCreateRestaurantWithoutCategory() throws Exception {
+        RestaurantRequest restaurantRequest = new RestaurantRequest();
+        restaurantRequest.setRestaurantName("缺分類餐廳");
+        restaurantRequest.setImageUrl("http://test.com/no-category");
+
+        String json = objectMapper.writeValueAsString(restaurantRequest);
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/restaurants")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.category", notNullValue()));
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Test
+    void shouldReturnBadRequestWhenCreateRestaurantWithMalformedJson() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/restaurants")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"restaurantName\":\"壞掉資料\"");
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest());
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Test
+    void shouldReturnRandomRestaurantWhenCategoryIsValid() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/random")
+                .param("category", "DRINK");
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.restaurantId", notNullValue()))
+                .andExpect(jsonPath("$.restaurantName", notNullValue()))
+                .andExpect(jsonPath("$.category", equalTo("飲料")))
+                .andExpect(jsonPath("$.visitedCount", notNullValue()))
+                .andExpect(jsonPath("$.updatedAt", notNullValue()));
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Test
+    void shouldReturnBadRequestWhenRandomCategoryIsInvalid() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/random")
+                .param("category", "INVALID");
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest());
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Transactional
+    @Test
+    void shouldClearRandomPoolWhenAdminCallsClearRandom() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/clearRandom");
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk());
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Test
+    void shouldReturnNotFoundWhenChooseRestaurantDoesNotExist() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .patch("/choose/{restaurantId}", 99999);
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isNotFound());
+    }
+
+    @WithMockUser(username = "member", roles = {"USER"})
+    @Test
+    void shouldReturnForbiddenWhenDeleteRestaurantWithoutAdminRole() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .delete("/restaurants/{restaurantId}", 1);
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isForbidden());
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Transactional
+    @Test
+    void shouldCompleteRandomChooseHistoryClearFlow() throws Exception {
+        String randomResponse = mockMvc.perform(
+                        MockMvcRequestBuilders.get("/random")
+                                .param("category", "MAIN"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        JsonNode randomJson = objectMapper.readTree(randomResponse);
+        int restaurantId = randomJson.get("restaurantId").asInt();
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/choose/{restaurantId}", restaurantId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.restaurantId", equalTo(restaurantId)))
+                .andExpect(jsonPath("$.lastSelectedAt", notNullValue()));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/restaurantHistories")
+                        .param("orderBy", "selected_at")
+                        .param("sort", "DESC")
+                        .param("limit", "1")
+                        .param("offset", "0"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results", hasSize(1)))
+                .andExpect(jsonPath("$.results[0].restaurantId", equalTo(restaurantId)))
+                .andExpect(jsonPath("$.results[0].selectedAt", notNullValue()));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/clearRandom"))
+                .andExpect(status().isOk());
     }
 }
