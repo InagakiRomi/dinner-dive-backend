@@ -38,8 +38,15 @@
   word-break: break-word;
 }
 
-.app-modal__close-btn {
+.app-modal__actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 0 20px;
+}
+
+.app-modal__primary-btn,
+.app-modal__cancel-btn {
   min-width: 90px;
   padding: 8px 18px;
-  margin: 0 0 20px;
 }

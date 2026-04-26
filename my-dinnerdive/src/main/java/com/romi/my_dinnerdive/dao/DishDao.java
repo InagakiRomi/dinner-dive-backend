@@ -19,4 +19,7 @@ public interface DishDao {
 
     /** 刪除指定 ID 的餐點資料 */
     void deleteDishById(Integer dishId);
+
+    /** 根據餐廳 ID 刪除該餐廳所有餐點 */
+    void deleteByRestaurantId(Integer restaurantId);
 }

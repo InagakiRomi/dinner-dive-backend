@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.romi.my_dinnerdive.dao.DishDao;
 import com.romi.my_dinnerdive.dao.RestaurantDao;
 import com.romi.my_dinnerdive.dto.RestaurantQueryParams;
 import com.romi.my_dinnerdive.dto.RestaurantRequest;
@@ -28,6 +29,9 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Autowired
     private RestaurantHistoryService restaurantHistoryService;
+
+    @Autowired
+    private DishDao dishDao;
 
     // 儲存未被抽過的餐廳 ID
     private List<Integer> idList;
@@ -61,7 +65,9 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
+    @Transactional
     public void deleteRestaurantById(Integer restaurantId){
+        dishDao.deleteByRestaurantId(restaurantId);
         restaurantDao.deleteRestaurantById(restaurantId);
     }
 

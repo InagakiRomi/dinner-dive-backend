@@ -164,6 +164,10 @@ async function deleteRestaurant(event) {
     if (deleteButton && tableBody.contains(deleteButton)) {
         event.preventDefault();
         const id = deleteButton.getAttribute("data-id");
+        const shouldDelete = await window.showAppConfirm("確定要刪除這間餐廳嗎？");
+        if (!shouldDelete) {
+            return;
+        }
 
         // 發送 DELETE 請求刪除資料
         const response = await fetch(`/restaurants/${id}`, {

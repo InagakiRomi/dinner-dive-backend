@@ -78,4 +78,14 @@ public class DishDaoImpl implements DishDao {
 
         namedParameterJdbcTemplate.update(sql, map);
     }
+
+    @Override
+    public void deleteByRestaurantId(Integer restaurantId) {
+        String sql = "DELETE FROM dishes WHERE restaurant_id = :restaurantId";
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("restaurantId", restaurantId);
+
+        namedParameterJdbcTemplate.update(sql, map);
+    }
 }

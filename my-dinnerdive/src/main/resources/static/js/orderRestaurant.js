@@ -1,10 +1,16 @@
 let restaurantId;
 const container = document.getElementById("dishContainer");
+const addDishButton = document.getElementById("addDishBtn");
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   restaurantId = document.body.getAttribute("dataRestaurantId");
 
-  loadRestaurantInfo(); // 顯示餐廳名稱
+  const restaurantExists = await loadRestaurantInfo(); // 顯示餐廳名稱
+  if (!restaurantExists) {
+    showRestaurantNotFound();
+    return;
+  }
+
   listDishes(); // 初始載入菜單資料
 });
 
@@ -16,12 +22,18 @@ async function loadRestaurantInfo() {
   });
 
   if (!response) {
-    return;
+    return false;
+  }
+
+  if (!response.ok) {
+    console.error("取得餐廳資訊失敗，status:", response.status);
+    return false;
   }
 
   const restaurant = await response.json();
   const title = document.getElementById("restaurantTitle");
   title.textContent = `${restaurant.restaurantName}`;
+  return true;
 }
 
 /** 取得餐點資料 */
@@ -34,6 +46,14 @@ async function listDishes() {
   );
 
   if (!response) {
+    return;
+  }
+
+  if (!response.ok) {
+    console.error("取得菜單失敗，status:", response.status);
+    if (response.status === 404) {
+      showRestaurantNotFound();
+    }
     return;
   }
 
@@ -70,6 +90,22 @@ async function listDishes() {
   });
 }
 
+/** 顯示查無餐廳訊息 */
+function showRestaurantNotFound() {
+  const title = document.getElementById("restaurantTitle");
+  title.textContent = "查無此餐廳";
+
+  container.innerHTML = "";
+  const notFoundMessage = document.createElement("div");
+  notFoundMessage.textContent = "查無此餐廳";
+  notFoundMessage.className = "noDishMessage";
+  container.appendChild(notFoundMessage);
+
+  if (addDishButton) {
+    addDishButton.style.display = "none";
+  }
+}
+
 /** 刪除餐點資料的處理邏輯 */
 container.addEventListener("click", deleteDish);
 async function deleteDish(event) {
@@ -79,6 +115,10 @@ async function deleteDish(event) {
 
     // 取得要刪除的餐點 ID
     const id = deleteButton.getAttribute("data-id");
+    const shouldDelete = await window.showAppConfirm("確定要刪除這筆餐點嗎？");
+    if (!shouldDelete) {
+      return;
+    }
 
     // 發送 DELETE 請求刪除資料
     const response = await fetch(`/dishes/${id}`, {
@@ -107,7 +147,9 @@ async function deleteDish(event) {
 }
 
 /** 導向新增餐點頁面 */
-document.getElementById("addDishBtn").addEventListener("click", addDishPage);
+if (addDishButton) {
+  addDishButton.addEventListener("click", addDishPage);
+}
 async function addDishPage() {
   // 導向新增餐點頁面
   window.location.href = `/dinnerHome/restaurants/${restaurantId}/dishes/createDish`;
