@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -265,5 +266,29 @@ public class RestaurantControllerTest {
 	        .andExpect(jsonPath("$.lastSelectedAt", notNullValue()))
                 .andExpect(jsonPath("$.updatedAt", notNullValue()))
                 .andExpect(jsonPath("$.note", equalTo("服務態度比飯好")));
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Transactional
+    @Test
+    void getRestaurantHistories_success() throws Exception {
+        RequestBuilder chooseRequest = MockMvcRequestBuilders
+                .patch("/choose/{restaurantId}", 1)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(chooseRequest)
+                .andExpect(status().is(200));
+
+        RequestBuilder historyRequest = MockMvcRequestBuilders
+                .get("/restaurantHistories")
+                .param("orderBy", "selected_at")
+                .param("sort", "DESC");
+
+        mockMvc.perform(historyRequest)
+                .andExpect(status().is(200))
+                .andExpect(jsonPath("$.total", greaterThanOrEqualTo(1)))
+                .andExpect(jsonPath("$.results[0].restaurantId", equalTo(1)))
+                .andExpect(jsonPath("$.results[0].restaurantName", equalTo("一番湯屋")))
+                .andExpect(jsonPath("$.results[0].selectedAt", notNullValue()));
     }
 }

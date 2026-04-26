@@ -7,12 +7,14 @@ import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.romi.my_dinnerdive.dao.RestaurantDao;
 import com.romi.my_dinnerdive.dto.RestaurantQueryParams;
 import com.romi.my_dinnerdive.dto.RestaurantRequest;
 import com.romi.my_dinnerdive.logging.LoggingDemo;
 import com.romi.my_dinnerdive.model.Restaurant;
+import com.romi.my_dinnerdive.service.RestaurantHistoryService;
 import com.romi.my_dinnerdive.service.RestaurantService;
 
 @Service
@@ -23,6 +25,9 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Autowired
     private LoggingDemo loggingDemo;
+
+    @Autowired
+    private RestaurantHistoryService restaurantHistoryService;
 
     // 儲存未被抽過的餐廳 ID
     private List<Integer> idList;
@@ -109,8 +114,15 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
+    @Transactional
     public void chooseRestaurant(Integer restaurantId){
+        Restaurant restaurant = restaurantDao.getRestaurantById(restaurantId);
+        if (restaurant == null) {
+            return;
+        }
+
         clearRandomRestaurant();
         restaurantDao.chooseRestaurant(restaurantId);
+        restaurantHistoryService.createHistory(restaurant);
     }
 }

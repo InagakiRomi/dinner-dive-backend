@@ -27,6 +27,12 @@ public class ThymeleafController {
     public String randomRestaurantPage() {
         return "dinnerHome/randomRestaurant";
     }
+
+    /** 抽選歷史紀錄頁面 */
+    @GetMapping("/dinnerHome/restaurantHistory")
+    public String restaurantHistoryPage() {
+        return "dinnerHome/restaurantHistory";
+    }
     
     /** 餐廳一覽頁面 */
     @GetMapping("dinnerHome/listRestaurant")
