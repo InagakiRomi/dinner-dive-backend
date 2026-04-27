@@ -22,8 +22,9 @@ async function memberRegister(registerForm) {
   // 從註冊表單讀取帳號、密碼欄位。
   const usernameInput = registerForm.querySelector("#registerUsername");
   const passwordInput = registerForm.querySelector("#registerPassword");
+  const roleInput = registerForm.querySelector("#registerRole");
 
-  if (!usernameInput || !passwordInput) {
+  if (!usernameInput || !passwordInput || !roleInput) {
     window.showAppModal("註冊欄位讀取失敗，請重新整理頁面後再試一次。");
     resetRegisterButton();
     return;
@@ -33,6 +34,7 @@ async function memberRegister(registerForm) {
   const memberJson = {
     username: usernameInput.value,
     userPassword: passwordInput.value,
+    roles: roleInput.value,
   };
 
   // 將資料送出給後端 API

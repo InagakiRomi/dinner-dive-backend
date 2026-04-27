@@ -116,6 +116,12 @@
             required
           />
 
+          <label for="registerRole">帳號類型：</label>
+          <select id="registerRole" name="roles" required>
+            <option value="USER" selected>一般使用者</option>
+            <option value="ADMIN">管理者</option>
+          </select>
+
           <button type="submit" class="btn btn-default btn-wide">註冊</button>
           <button type="button" class="btn btn-default btn-wide" id="toLoginBtn">
             已有帳號？點此登入
