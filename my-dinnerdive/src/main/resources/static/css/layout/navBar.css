@@ -99,6 +99,22 @@ body.pinkTheme {
     padding: 0;          /* 移除內邊距 */
 }
 
+.navLinks--restricted {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+}
+
+.restrictedNotice {
+    max-width: 960px;
+    margin: 28px auto 0;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-nav-text);
+    padding: 0 16px;
+}
+
 /* ==== 導覽列中的連結樣式 ==== */
 .navBar .navLinks li a {
     font-size: 1.1rem;               /* 字體大小 */
@@ -181,6 +197,10 @@ body.pinkTheme {
         justify-content: center;
         flex-wrap: wrap;
         gap: 10px;
+    }
+
+    .navLinks--restricted {
+        justify-content: center;
     }
 }
 

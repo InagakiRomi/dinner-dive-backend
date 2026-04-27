@@ -4,14 +4,7 @@
 <head>
     <!-- 引入共用的 head -->
     <option th:replace="~{layout/headTitle :: commonHeadTitle}"></option>
-    <!-- 匯入按鈕樣式 -->
-    <link rel="stylesheet" href="/css/components/buttonStyle.css">
-
-    <!-- 匯入導覽列樣式 -->
-    <link rel="stylesheet" href="/css/layout/navBar.css">
-
-    <!-- 匯入表單通用樣式 -->
-    <link rel="stylesheet" href="/css/forms/formCommon.css">
+    <th:block th:replace="~{layout/commonStyles :: navButtonAndForm}"></th:block>
 
     <!-- 匯入表單內圖片通用樣式 -->
     <link rel="stylesheet" href="/css/imageStyle.css">

@@ -1,50 +1,87 @@
 <!-- 導覽列共用設定 -->
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-
-<body>
+  <body>
     <!-- 可在其他頁面中使用最上方的導覽列 -->
     <th:block th:fragment="sharedNavBar">
-        <nav class="navBar">
+      <nav class="navBar">
+        <!-- 導覽列標題 -->
+        <!-- <div class="logo">🍜 美食地圖</div> -->
 
-            <!-- 導覽列標題 -->
-            <!-- <div class="logo">🍜 美食地圖</div> -->
+        <!-- 帳號名稱 -->
+        <div class="logo" th:text="'Hello！' + ${username}"></div>
+        <!-- 帳號權限 -->
+        <div class="role-info">
+          <span
+            class="label-bold role-info__permission"
+            th:text="帳號權限： + ${roles}"
+          ></span>
+          <span
+            class="label-bold role-info__hint"
+            th:if="${roles == '一般使用者'}"
+          >
+            （提示：一般使用者無法刪除餐廳與餐點）
+          </span>
+        </div>
 
-            <!-- 帳號名稱 -->
-            <div class="logo" th:text="'Hello！' + ${username}"></div>
-            <!-- 帳號權限 -->
-            <div class="role-info">
-                <span class="label-bold role-info__permission" th:text="帳號權限： + ${roles}"></span>
-                <span
-                    class="label-bold role-info__hint"
-                    th:if="${roles == '一般使用者'}"
-                >
-                    （提示：一般使用者無法刪除餐廳與餐點）
-                </span>
-            </div>
+        <!-- 導覽選單項目 -->
+        <ul class="navLinks">
+          <!-- 導向首頁（隨機餐廳推薦） -->
+          <li>
+            <a
+              href="/dinnerHome/randomRestaurant"
+              class="navButton navButton--coffee"
+              >抽餐廳</a
+            >
+          </li>
 
-            <!-- 導覽選單項目 -->
-            <ul class="navLinks">
-                 <!-- 導向首頁（隨機餐廳推薦） -->
-                <li><a href="/dinnerHome/randomRestaurant" class="navButton navButton--coffee">抽餐廳</a></li>
-                
-                <!-- 導向新增餐廳頁面 -->
-                <!-- <li><a href="/dinnerHome/createRestaurant">新增餐廳</a></li> -->
+          <!-- 導向新增餐廳頁面 -->
+          <!-- <li><a href="/dinnerHome/createRestaurant">新增餐廳</a></li> -->
 
-                <!-- 餐廳清單 -->
-                <li><a href="/dinnerHome/listRestaurant" class="navButton navButton--coffee">餐廳一覽</a></li>
+          <!-- 餐廳清單 -->
+          <li>
+            <a
+              href="/dinnerHome/listRestaurant"
+              class="navButton navButton--coffee"
+              >餐廳一覽</a
+            >
+          </li>
 
-                <!-- 抽選歷史紀錄 -->
-                <li><a href="/dinnerHome/restaurantHistory" class="navButton navButton--coffee">歷史紀錄</a></li>
+          <!-- 抽選歷史紀錄 -->
+          <li>
+            <a
+              href="/dinnerHome/restaurantHistory"
+              class="navButton navButton--coffee"
+              >歷史紀錄</a
+            >
+          </li>
 
-                <!-- 登出按鈕（POST 請求） -->
-                <li>
-                    <form th:action="@{/logout}" method="post">
-                        <button type="submit" class="navButton">登出</button>
-                    </form>
-                </li>
-            </ul>
-        </nav>
+          <!-- 登出按鈕（POST 請求） -->
+          <li>
+            <form th:action="@{/logout}" method="post">
+              <button type="submit" class="navButton">登出</button>
+            </form>
+          </li>
+        </ul>
+      </nav>
+
+      <script th:inline="javascript">
+        (() => {
+          const restrictedView = /*[[${restrictedView}]]*/ false;
+          const noGroupPagePath = "/dinnerHome/noGroup";
+          const defaultPagePath = "/dinnerHome/randomRestaurant";
+          const currentPath = window.location.pathname;
+
+          if (restrictedView && currentPath !== noGroupPagePath) {
+            window.location.replace(noGroupPagePath);
+            return;
+          }
+
+          if (!restrictedView && currentPath === noGroupPagePath) {
+            window.location.replace(defaultPagePath);
+          }
+        })();
+      </script>
     </th:block>
-</body>
+  </body>
 </html>

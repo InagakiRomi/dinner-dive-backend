@@ -8,15 +8,21 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.romi.my_dinnerdive.constant.UserCategory;
+import com.romi.my_dinnerdive.dao.UserDao;
+import com.romi.my_dinnerdive.model.User;
 
 /** 可以自動在所有的 @Controller 方法中加入共用資料 */
 @ControllerAdvice
 public class GlobalModelAttribute {
+
+    @Autowired
+    private UserDao userDao;
 
     /**
      * 這個方法會在每一次執行 Controller 裡的任何方法前被自動呼叫，並且將我們要加入的資料進 model 裡
@@ -25,6 +31,9 @@ public class GlobalModelAttribute {
      */
     @ModelAttribute
     public void addUserInfoToModel(Model model, Principal principal) {
+        // 先注入受限畫面狀態，供共用導覽列切換顯示
+        addRestrictedViewStatus(model, principal);
+
         // 沒有登入就直接跳過
         if (principal == null) {
             return;
@@ -77,6 +86,28 @@ public class GlobalModelAttribute {
         } catch (IllegalArgumentException ex) {
             // 如果找不到對應的 enum（表示不是我們認得的角色），就回傳空
             return Optional.empty();
+        }
+    }
+
+    /** 根據登入/群組狀態決定是否顯示受限畫面。 */
+    private void addRestrictedViewStatus(Model model, Principal principal) {
+        if (principal == null) {
+            model.addAttribute("restrictedView", false);
+            return;
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isGeneralUser = auth != null
+                && auth.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .anyMatch("ROLE_USER"::equals);
+
+        User user = userDao.getUserByUsername(principal.getName());
+        boolean isUserWithoutGroup = isGeneralUser && user != null && Integer.valueOf(1).equals(user.getGroupId());
+
+        model.addAttribute("restrictedView", isUserWithoutGroup);
+        if (isUserWithoutGroup) {
+            model.addAttribute("restrictedMessage", "還沒有加入任何群組哦請尋找管理員加入群組");
         }
     }
 }

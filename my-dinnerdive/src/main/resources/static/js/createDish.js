@@ -2,7 +2,6 @@ import {
   bindFormSubmit,
   getInputValue,
   getNumberInputValue,
-  isAuthError,
   redirectTo,
   request,
 } from "./modules/appShared.js";
@@ -44,8 +43,6 @@ async function createDish() {
     window.showAppModal("餐點新增成功！", () => {
       redirectToDishesPage(restaurantId);
     });
-  } else if (isAuthError(response.status)) {
-    window.showAppModal("請先登入後再新增餐點。");
   } else {
     window.showAppModal(`新增失敗（${response.status}）`);
   }

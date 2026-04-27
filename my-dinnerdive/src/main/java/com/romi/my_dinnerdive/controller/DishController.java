@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.romi.my_dinnerdive.dto.DishRequest;
 import com.romi.my_dinnerdive.model.Dish;
+import com.romi.my_dinnerdive.model.Restaurant;
 import com.romi.my_dinnerdive.service.DishService;
+import com.romi.my_dinnerdive.service.RestaurantService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,6 +34,9 @@ public class DishController {
 
     @Autowired
     private DishService dishService;
+
+    @Autowired
+    private RestaurantService restaurantService;
 
     /** 根據餐廳 ID 查詢餐點資料 */
     @GetMapping("/restaurants/{restaurantId}/dishes")
@@ -71,6 +76,11 @@ public class DishController {
             )
             @RequestBody @Valid DishRequest dishRequest
     ) {
+        Restaurant restaurant = restaurantService.getRestaurantById(dishRequest.getRestaurantId());
+        if (restaurant == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
         // 呼叫 Service 層，將新增資料寫入資料庫，取得新產生的 dishId
         Integer dishId = dishService.createDish(dishRequest);
 

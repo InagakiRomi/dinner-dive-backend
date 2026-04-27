@@ -7,7 +7,10 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.romi.my_dinnerdive.dao.UserDao;
@@ -46,6 +49,14 @@ public class UserSericeImpl implements UserService{
             throw new ResponseStatusException(HttpStatus.CONFLICT, "該帳號已經被註冊");
         }
 
+        if (userRegisterRequest.getGroupId() == null) {
+            userRegisterRequest.setGroupId(1);
+        }
+
+        if (userRegisterRequest.getRoles() == null) {
+            userRegisterRequest.setRoles(com.romi.my_dinnerdive.constant.UserCategory.USER);
+        }
+
         // 密碼加密後儲存
         String hashedPassword = passwordEncoder.encode(userRegisterRequest.getUserPassword());
         userRegisterRequest.setUserPassword(hashedPassword);
@@ -71,6 +82,35 @@ public class UserSericeImpl implements UserService{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "密碼錯誤");
         }
 
+        return user;
+    }
+
+    @Override
+    @Transactional
+    public void transferAdmin(Integer nextAdminUserId) {
+        User currentUser = getCurrentUser();
+        if (currentUser.getRoles() != com.romi.my_dinnerdive.constant.UserCategory.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只有管理員可以移轉權限");
+        }
+
+        User nextAdmin = userDao.getUserById(nextAdminUserId);
+        if (nextAdmin == null || !currentUser.getGroupId().equals(nextAdmin.getGroupId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "目標使用者不存在或不在同群組");
+        }
+
+        userDao.transferAdmin(currentUser.getGroupId(), currentUser.getUserId(), nextAdminUserId);
+    }
+
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getName() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "尚未登入");
+        }
+
+        User user = userDao.getUserByUsername(authentication.getName());
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "使用者不存在");
+        }
         return user;
     }
 

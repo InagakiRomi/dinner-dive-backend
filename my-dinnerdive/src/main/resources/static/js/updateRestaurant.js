@@ -2,7 +2,6 @@ import {
   bindFormSubmit,
   getInputValue,
   getNumberInputValue,
-  isAuthError,
   redirectTo,
   request,
 } from "./modules/appShared.js";
@@ -53,8 +52,6 @@ async function updateRestaurant() {
     window.showAppModal("修改成功！", () => {
       redirectTo("/dinnerHome/listRestaurant");
     });
-  } else if (isAuthError(response.status)) {
-    window.showAppModal("請先登入後再修改餐廳資料。");
   } else {
     window.showAppModal(`修改失敗（${response.status}）`);
   }

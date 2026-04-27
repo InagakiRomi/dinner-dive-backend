@@ -25,7 +25,7 @@ public class UserDaoImpl implements UserDao{
 
     @Override
     public User getUserById(Integer userId){
-        String sql = "SELECT user_id, username, user_password, roles, created_date, last_modified_date " +
+        String sql = "SELECT user_id, group_id, username, user_password, roles, created_date, last_modified_date " +
                      "FROM users WHERE user_id = :userId";
 
         Map<String, Object> map = new HashMap<>();
@@ -42,7 +42,7 @@ public class UserDaoImpl implements UserDao{
 
     @Override
     public User getUserByUsername(String username){
-        String sql = "SELECT user_id, username, user_password, roles, created_date, last_modified_date " +
+        String sql = "SELECT user_id, group_id, username, user_password, roles, created_date, last_modified_date " +
                      "FROM users WHERE username = :username";
 
         Map<String, Object> map = new HashMap<>();
@@ -59,10 +59,11 @@ public class UserDaoImpl implements UserDao{
 
     @Override
     public Integer createUser(UserRegisterRequest userRegisterRequest) {
-        String sql = "INSERT INTO users (username, user_password, roles, created_date, last_modified_date) " +
-                    "VALUES (:username, :userPassword, :roles, :createdDate, :lastModifiedDate)";
+        String sql = "INSERT INTO users (group_id, username, user_password, roles, created_date, last_modified_date) " +
+                    "VALUES (:groupId, :username, :userPassword, :roles, :createdDate, :lastModifiedDate)";
 
         Map<String, Object> map = new HashMap<>();
+        map.put("groupId", userRegisterRequest.getGroupId());
         map.put("username", userRegisterRequest.getUsername());
         map.put("userPassword", userRegisterRequest.getUserPassword());
         map.put("roles", userRegisterRequest.getRoles().name());
@@ -81,5 +82,53 @@ public class UserDaoImpl implements UserDao{
         } else {
             throw new IllegalStateException("無法取得自動產生的 user_id");
         }
+    }
+
+    @Override
+    public Integer createGroup(String groupName) {
+        String sql = "INSERT INTO user_groups (group_name, created_date, last_modified_date) " +
+                "VALUES (:groupName, :createdDate, :lastModifiedDate)";
+
+        Map<String, Object> map = new HashMap<>();
+        Date now = new Date();
+        map.put("groupName", groupName);
+        map.put("createdDate", now);
+        map.put("lastModifiedDate", now);
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+
+        Number key = keyHolder.getKey();
+        if (key != null) {
+            return key.intValue();
+        }
+        throw new IllegalStateException("無法取得自動產生的 group_id");
+    }
+
+    @Override
+    @SuppressWarnings("null")
+    public boolean hasAdminInGroup(Integer groupId) {
+        String sql = "SELECT count(*) FROM users WHERE group_id = :groupId AND roles = 'ADMIN'";
+        Map<String, Object> map = new HashMap<>();
+        map.put("groupId", groupId);
+        Integer count = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+        return count != null && count > 0;
+    }
+
+    @Override
+    public void transferAdmin(Integer groupId, Integer currentAdminId, Integer nextAdminId) {
+        String demoteSql = "UPDATE users SET roles = 'USER', last_modified_date = :lastModifiedDate " +
+                "WHERE user_id = :currentAdminId AND group_id = :groupId AND roles = 'ADMIN'";
+        String promoteSql = "UPDATE users SET roles = 'ADMIN', last_modified_date = :lastModifiedDate " +
+                "WHERE user_id = :nextAdminId AND group_id = :groupId";
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("groupId", groupId);
+        map.put("currentAdminId", currentAdminId);
+        map.put("nextAdminId", nextAdminId);
+        map.put("lastModifiedDate", new Date());
+
+        namedParameterJdbcTemplate.update(demoteSql, map);
+        namedParameterJdbcTemplate.update(promoteSql, map);
     }
 }

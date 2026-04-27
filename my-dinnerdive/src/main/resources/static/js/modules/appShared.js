@@ -1,5 +1,7 @@
 // 共用網路錯誤訊息：所有 request 預設用這句。
 const DEFAULT_NETWORK_ERROR_MESSAGE = "系統發生錯誤（網路或連線異常）！";
+// 共用未加入群組提示文案。
+export const NO_GROUP_MESSAGE = "還沒有加入任何群組哦請尋找管理員加入群組";
 // 共用 JSON 標頭：避免每支檔案重複定義。
 const JSON_HEADERS = Object.freeze({
   "Content-Type": "application/json",

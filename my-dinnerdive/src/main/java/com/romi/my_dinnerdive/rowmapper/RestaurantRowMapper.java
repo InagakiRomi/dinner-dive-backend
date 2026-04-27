@@ -28,6 +28,7 @@ public class RestaurantRowMapper implements RowMapper<Restaurant> {
         Restaurant restaurant = new Restaurant();
 
         restaurant.setRestaurantId(resultSet.getInt("restaurant_id"));
+        restaurant.setGroupId(resultSet.getInt("group_id"));
         restaurant.setRestaurantName(resultSet.getString("restaurant_name"));
 
         // 餐廳分類轉為 enum

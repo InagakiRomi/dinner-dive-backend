@@ -15,4 +15,7 @@ public interface UserService {
 
     /** 使用者登入驗證 */
     User login(UserLoginRequest userLoginRequest);
+
+    /** 轉移目前群組的管理權限 */
+    void transferAdmin(Integer nextAdminUserId);
 }

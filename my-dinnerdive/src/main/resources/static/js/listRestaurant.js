@@ -4,7 +4,6 @@ import {
   createPaginationController,
   createQueryString,
   getInputValue,
-  isAuthError,
   request,
 } from "./modules/appShared.js";
 
@@ -57,11 +56,7 @@ async function listRestaurant() {
   }
 
   if (!response.ok) {
-    if (isAuthError(response.status)) {
-      window.showAppModal("請先登入後再查看餐廳資料。");
-    } else {
-      window.showAppModal(`查詢餐廳失敗（${response.status}）`);
-    }
+    window.showAppModal(`查詢餐廳失敗（${response.status}）`);
     return;
   }
 
@@ -129,7 +124,7 @@ async function deleteRestaurant(event) {
   if (response.ok) {
     window.showAppModal("刪除成功！");
     await listRestaurant();
-  } else if (isAuthError(response.status)) {
+  } else if (response.status === 403) {
     window.showAppModal("只有管理員帳號可以刪除餐廳資料！");
   } else {
     window.showAppModal(`刪除失敗（${response.status}）`);

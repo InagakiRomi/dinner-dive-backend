@@ -25,6 +25,10 @@ public class UserRegisterRequest {
     @Schema(description = "使用者角色，可填 ADMIN、USER、GUEST", example = "USER")
     private UserCategory roles;
 
+    /** 指定要加入的群組（一般使用者可加入既有群組） */
+    @Schema(description = "目標群組 ID，不填則建立新群組", example = "1")
+    private Integer groupId;
+
     public String getUsername() {
         return username;
     }
@@ -42,5 +46,11 @@ public class UserRegisterRequest {
     }
     public void setRoles(UserCategory roles) {
         this.roles = roles;
+    }
+    public Integer getGroupId() {
+        return groupId;
+    }
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
     }
 }

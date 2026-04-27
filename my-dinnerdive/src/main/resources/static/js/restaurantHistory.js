@@ -4,7 +4,6 @@ import {
   createPaginationController,
   createQueryString,
   getInputValue,
-  isAuthError,
   request,
 } from "./modules/appShared.js";
 
@@ -52,11 +51,7 @@ async function listHistory() {
   }
 
   if (!response.ok) {
-    if (isAuthError(response.status)) {
-      window.showAppModal("請先登入後再查看歷史紀錄。");
-    } else {
-      window.showAppModal(`查詢歷史紀錄失敗（${response.status}）`);
-    }
+    window.showAppModal(`查詢歷史紀錄失敗（${response.status}）`);
     return;
   }
 

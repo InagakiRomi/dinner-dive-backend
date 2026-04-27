@@ -1,5 +1,5 @@
 import { getCurrentId } from "./randomRestaurant.js";
-import { isAuthError, redirectTo, request } from "./modules/appShared.js";
+import { redirectTo, request } from "./modules/appShared.js";
 
 // 「就決定選這間」按鈕。
 const chooseButton = document.getElementById("choose-btn");
@@ -29,8 +29,6 @@ async function chooseRestaurant() {
     window.showAppModal("選擇成功！", () => {
       redirectTo("/dinnerHome/randomRestaurant");
     });
-  } else if (isAuthError(response.status)) {
-    window.showAppModal("請先登入後再選擇餐廳。");
   } else if (response.status === 400) {
     window.showAppModal(`請先開始抽選餐廳。`);
   } else {

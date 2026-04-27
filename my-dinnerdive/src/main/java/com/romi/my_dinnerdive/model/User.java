@@ -20,6 +20,10 @@ public class User {
     @Schema(description = "使用者唯一識別 ID", example = "1")
     private Integer userId;
 
+    /** 所屬群組 ID */
+    @Schema(description = "所屬群組 ID", example = "1")
+    private Integer groupId;
+
     /** 使用者帳號 */
     @Column(unique = true)
     @Schema(description = "使用者帳號", example = "Yuna001")
@@ -59,6 +63,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Integer getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
     }
 
     public String getUserPassword() {

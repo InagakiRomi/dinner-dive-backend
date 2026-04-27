@@ -28,6 +28,12 @@ public class ThymeleafController {
         return "dinnerHome/randomRestaurant";
     }
 
+    /** 未加入群組提示頁面 */
+    @GetMapping("/dinnerHome/noGroup")
+    public String noGroupPage() {
+        return "dinnerHome/noGroup";
+    }
+
     /** 抽選歷史紀錄頁面 */
     @GetMapping("/dinnerHome/restaurantHistory")
     public String restaurantHistoryPage() {

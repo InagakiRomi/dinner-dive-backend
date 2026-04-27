@@ -1,4 +1,54 @@
-INSERT INTO dishes 
+INSERT INTO user_groups
+(group_id, group_name, created_date, last_modified_date) VALUES
+(1, 'Test Team', '2025-07-20 00:47:56', '2025-07-20 00:47:56');
+
+INSERT INTO restaurants
+(restaurant_id, group_id, restaurant_name, category, image_url, visited_count, last_selected_at, updated_at, note) VALUES
+(1, 1, '一番湯屋', 'MAIN', 'https://images.unsplash.com/photo-1614563637806-1d0e645e0940?q=80&w=1973&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 3, '2025-06-06 17:37:50', '2025-07-29 12:07:33', '這湯的香味可以拿去當香水賣'),
+(2, 1, '飯淋咖哩郎', 'MAIN', 'https://images.unsplash.com/photo-1694953593181-6ce423500712?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 1, '2025-05-24 12:00:00', '2025-07-29 16:41:19', '日式咖哩店'),
+(3, 1, '鬆餅老師', 'SNACK', 'https://images.unsplash.com/photo-1669277038512-2dc8b3a2aac8?q=80&w=2048&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 1, '2025-05-24 15:06:58', '2025-05-18 23:06:13', '鬆餅厚到可以當枕頭'),
+(4, 1, '吃飽客', 'MAIN', 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 1, '2025-05-24 12:00:00', '2025-05-18 23:06:13', '披薩大到可以當盾牌'),
+(5, 1, '飯丸本舖', 'MAIN', 'https://images.unsplash.com/photo-1700323449261-5332ce054718?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 4, '2024-11-28 15:56:19', '2025-07-29 17:06:19', '傳說中吃太快會跟飯丸變朋友的那間店'),
+(6, 1, '麵有引力', 'MAIN', 'https://images.unsplash.com/photo-1673442635965-34f1b36d8944?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 0, NULL, '2025-07-29 17:05:31', '主打「你不靠近，我麵也會拉你過來。」'),
+(7, 1, '尊爵有錢人', 'MAIN', 'https://images.unsplash.com/photo-1565299715199-866c917206bb?q=80&w=1980&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 0, NULL, '2025-05-24 16:53:58', '吃不起但還是吃了'),
+(8, 1, '牛肉再多點', 'MAIN', 'https://images.unsplash.com/photo-1631709497146-a239ef373cf1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 0, NULL, '2025-06-08 23:49:21', '牛肉比麵還多，驚訝！'),
+(9, 1, 'No奶都來', 'DRINK', 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 3, '2025-04-08 19:07:49', '2025-06-14 14:51:48', '奶味很濃'),
+(10, 1, '五十籃投手', 'DRINK', 'https://images.unsplash.com/photo-1525803377221-4f6ccdaa5133?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 0, NULL, '2025-06-14 15:06:40', '喝完好想再投一籃'),
+(11, 1, '歪堡起司', 'SNACK', 'https://images.unsplash.com/photo-1610970878459-a0e464d7592b?q=80&w=2124&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 0, NULL, '2025-06-14 15:03:47', '堡堡斜到我都歪了'),
+(12, 1, '謬奶可可', 'DRINK', 'https://images.unsplash.com/photo-1563636619-e9143da7973b?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 0, NULL, '2025-06-14 15:05:47', '牛奶濃得像人生誤會'),
+(13, 1, '真香廚房', 'MAIN', 'https://cdn.pixabay.com/photo/2015/05/02/00/57/aluminous-749358_1280.jpg', 1, '2024-08-14 20:14:20', '2025-06-08 13:40:41', '吃完覺得靈魂被淨化了'),
+(14, 1, '不辣不愛', 'MAIN', 'https://cdn.pixabay.com/photo/2021/06/27/11/00/ma-la-crawfish-6368464_1280.jpg', 4, '2024-08-19 21:33:01', '2024-10-02 21:23:34', '我吃過最像家裡煮的外食'),
+(15, 1, '今天也要吃', 'SNACK', 'https://cdn.pixabay.com/photo/2016/10/30/09/30/hot-chocolate-1782623_1280.jpg', 2, '2025-05-23 18:20:33', '2025-06-17 21:14:21', '吃完覺得靈魂被淨化了'),
+(16, 1, '開動囉食堂', 'SNACK', 'https://cdn.pixabay.com/photo/2020/04/04/15/07/sushi-5002639_1280.jpg', 1, '2024-07-09 14:25:49', '2025-05-18 21:56:09', '下次不要再點一樣的'),
+(17, 1, '再吃會胖屋', 'SNACK', 'https://cdn.pixabay.com/photo/2016/11/08/10/39/chicken-1807883_1280.jpg', 3, '2024-12-01 18:04:11', '2024-12-22 19:53:57', '我吃過最像家裡煮的外食'),
+(18, 1, '今晚我想來點', 'MAIN', NULL, 5, '2024-08-30 17:06:01', '2025-05-24 14:01:15', '我吃過最像家裡煮的外食'),
+(19, 1, '隨便煮煮', 'SNACK', NULL, 2, '2025-05-06 15:53:28', '2025-06-06 19:08:19', '吃完覺得靈魂被淨化了'),
+(20, 1, '問就是牛排', 'MAIN', 'https://cdn.pixabay.com/photo/2018/08/09/07/49/meat-3593929_1280.jpg', 2, '2025-06-27 15:45:56', '2025-06-30 20:23:50', '跟照片長得不一樣'),
+(21, 1, '阿母的味道', 'MAIN', 'https://cdn.pixabay.com/photo/2014/01/09/10/14/kimchi-fried-rice-241051_1280.jpg', 4, '2025-06-19 15:23:25', '2025-06-19 15:23:25', '打卡專用'),
+(22, 1, '乾乾拌拌', 'MAIN', 'https://cdn.pixabay.com/photo/2020/03/31/01/56/fried-rice-4985989_1280.jpg', 0, NULL, '2025-01-01 17:39:53', '服務態度比飯好'),
+(23, 1, '湯多一點', 'MAIN', NULL, 0, NULL, '2024-08-22 18:52:38', '打卡專用'),
+(24, 1, '三分鐘上桌', 'DRINK', 'https://cdn.pixabay.com/photo/2023/05/31/11/14/smoothie-8031132_1280.jpg', 2, '2025-02-22 16:13:56', '2025-07-10 13:22:28', '笑死喝個飲料還能打翻'),
+(25, 1, '醬太多', 'MAIN', NULL, 2, '2025-03-12 14:58:55', '2025-05-27 21:02:10', '不錯吃，就是太貴'),
+(26, 1, '外送也排隊', 'SNACK', 'https://cdn.pixabay.com/photo/2022/01/18/19/30/salad-6948004_1280.jpg', 1, '2025-04-20 13:20:59', '2025-06-15 20:32:33', '我吃過最像家裡煮的外食'),
+(27, 1, '地獄廚神', 'MAIN', 'https://cdn.pixabay.com/photo/2022/05/12/17/05/hamburger-7191898_1280.jpg', 4, '2025-06-11 13:08:44', '2025-07-04 16:28:39', '跟照片長得不一樣'),
+(28, 1, '炸你全家', 'MAIN', 'https://cdn.pixabay.com/photo/2019/09/26/18/23/republic-of-korea-4506696_1280.jpg', 3, '2024-07-20 21:34:47', '2024-08-12 20:14:40', '服務態度比飯好'),
+(29, 1, '四號桌別跑', 'MAIN', NULL, 5, '2025-03-23 21:42:51', '2025-04-24 16:31:03', '我吃過最像家裡煮的外食'),
+(30, 1, '小籠包大冒險', 'MAIN', NULL, 1, '2025-03-01 14:08:57', '2025-05-31 15:01:01', '店員帥加一星'),
+(31, 1, '我不挑食', 'DRINK', 'https://cdn.pixabay.com/photo/2016/08/26/21/16/carrot-juice-1623157_960_720.jpg', 2, '2025-01-16 17:39:31', '2025-01-16 17:39:31', '招牌是健康'),
+(32, 1, '隱藏口袋店', 'MAIN', 'https://cdn.pixabay.com/photo/2019/08/09/08/14/steak-4394612_1280.jpg', 1, '2025-05-30 14:09:28', '2025-05-30 14:09:28', '服務態度比飯好'),
+(33, 1, '鹽味本舖', 'MAIN', 'https://cdn.pixabay.com/photo/2021/10/21/12/38/pho-ga-6729006_1280.jpg', 1, '2025-02-16 13:08:24', '2025-03-05 18:50:37', '老闆只信三樣東西，鹽、柴魚和他的直覺'),
+(34, 1, '苦瓜別加', 'SNACK', NULL, 0, NULL, '2025-03-28 13:45:17', '下次不要再點一樣的'),
+(35, 1, '咖哩真香', 'MAIN', 'https://cdn.pixabay.com/photo/2015/10/01/14/29/curry-967086_640.jpg', 0, NULL, '2024-10-10 20:24:30', '下次不要再點一樣的'),
+(36, 1, '牛奶加點糖', 'DRINK', NULL, 1, '2024-09-12 15:23:17', '2025-06-26 15:27:34', '打卡專用'),
+(37, 1, '甜到蛀牙', 'DRINK', 'https://cdn.pixabay.com/photo/2018/01/26/15/21/hot-3108893_640.jpg', 2, '2024-07-29 16:09:25', '2024-08-09 15:56:33', '我喝過最甜的飲料'),
+(38, 1, '炸雞不香嗎', 'MAIN', 'https://cdn.pixabay.com/photo/2022/05/06/16/17/broasted-chicken-7178658_1280.jpg', 0, NULL, '2024-07-22 17:49:21', '笑死吃個飯還能打翻'),
+(39, 1, '漢堡很圓', 'SNACK', 'https://cdn.pixabay.com/photo/2016/05/25/10/43/hamburger-1414423_1280.jpg', 1, '2024-07-03 19:34:16', '2024-10-20 14:17:39', '服務態度比飯好'),
+(40, 1, '一杯不到五十', 'DRINK', 'https://cdn.pixabay.com/photo/2022/11/04/00/40/juice-7568712_1280.jpg', 0, NULL, '2024-08-17 18:33:01', '我喝過最像樣的飲料'),
+(41, 1, '續杯會後悔', 'DRINK', 'https://cdn.pixabay.com/photo/2018/03/13/11/39/fruit-3222313_640.jpg', 3, '2024-11-27 20:33:17', '2024-12-18 21:58:12', '跟照片長得不一樣'),
+(42, 1, '拌飯拌心情', 'MAIN', 'https://cdn.pixabay.com/photo/2015/04/10/00/41/food-715542_1280.jpg', 1, '2024-10-04 21:09:25', '2025-06-25 17:09:48', '不錯吃，就是太貴'),
+(43, 1, '吃完不後悔', 'SNACK', 'https://cdn.pixabay.com/photo/2020/02/22/08/55/the-cake-4869920_1280.jpg', 4, '2025-05-20 16:45:33', '2025-05-20 16:45:33', '打卡專用');
+
+INSERT INTO dishes
 (dish_id, restaurant_id, price, dish_name) VALUES
 (1, 1, 280, '豚骨拉麵'),
 (2, 1, 260, '地獄辣味拉麵'),
@@ -327,56 +377,3 @@ INSERT INTO dishes
 (325, 43, 30, '叉燒包  '),
 (326, 43, 25, '芋泥流沙包  '),
 (327, 43, 22, '紅豆豆沙包');
-
-INSERT INTO restaurants 
-(restaurant_id, restaurant_name, category, image_url, visited_count, last_selected_at, updated_at, note) VALUES
-(1, '一番湯屋', 'MAIN', 'https://images.unsplash.com/photo-1614563637806-1d0e645e0940?q=80&w=1973&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 3, '2025-06-06 17:37:50', '2025-07-29 12:07:33', '這湯的香味可以拿去當香水賣'),
-(2, '飯淋咖哩郎', 'MAIN', 'https://images.unsplash.com/photo-1694953593181-6ce423500712?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 1, '2025-05-24 12:00:00', '2025-07-29 16:41:19', '日式咖哩店'),
-(3, '鬆餅老師', 'SNACK', 'https://images.unsplash.com/photo-1669277038512-2dc8b3a2aac8?q=80&w=2048&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 1, '2025-05-24 15:06:58', '2025-05-18 23:06:13', '鬆餅厚到可以當枕頭'),
-(4, '吃飽客', 'MAIN', 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 1, '2025-05-24 12:00:00', '2025-05-18 23:06:13', '披薩大到可以當盾牌'),
-(5, '飯丸本舖', 'MAIN', 'https://images.unsplash.com/photo-1700323449261-5332ce054718?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 4, '2024-11-28 15:56:19', '2025-07-29 17:06:19', '傳說中吃太快會跟飯丸變朋友的那間店'),
-(6, '麵有引力', 'MAIN', 'https://images.unsplash.com/photo-1673442635965-34f1b36d8944?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 0, NULL, '2025-07-29 17:05:31', '主打「你不靠近，我麵也會拉你過來。」'),
-(7, '尊爵有錢人', 'MAIN', 'https://images.unsplash.com/photo-1565299715199-866c917206bb?q=80&w=1980&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 0, NULL, '2025-05-24 16:53:58', '吃不起但還是吃了'),
-(8, '牛肉再多點', 'MAIN', 'https://images.unsplash.com/photo-1631709497146-a239ef373cf1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 0, NULL, '2025-06-08 23:49:21', '牛肉比麵還多，驚訝！'),
-(9, 'No奶都來', 'DRINK', 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 3, '2025-04-08 19:07:49', '2025-06-14 14:51:48', '奶味很濃'),
-(10, '五十籃投手', 'DRINK', 'https://images.unsplash.com/photo-1525803377221-4f6ccdaa5133?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 0, NULL, '2025-06-14 15:06:40', '喝完好想再投一籃'),
-(11, '歪堡起司', 'SNACK', 'https://images.unsplash.com/photo-1610970878459-a0e464d7592b?q=80&w=2124&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 0, NULL, '2025-06-14 15:03:47', '堡堡斜到我都歪了'),
-(12, '謬奶可可', 'DRINK', 'https://images.unsplash.com/photo-1563636619-e9143da7973b?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 0, NULL, '2025-06-14 15:05:47', '牛奶濃得像人生誤會'),
-(13, '真香廚房', 'MAIN', 'https://cdn.pixabay.com/photo/2015/05/02/00/57/aluminous-749358_1280.jpg', 1, '2024-08-14 20:14:20', '2025-06-08 13:40:41', '吃完覺得靈魂被淨化了'),
-(14, '不辣不愛', 'MAIN', 'https://cdn.pixabay.com/photo/2021/06/27/11/00/ma-la-crawfish-6368464_1280.jpg', 4, '2024-08-19 21:33:01', '2024-10-02 21:23:34', '我吃過最像家裡煮的外食'),
-(15, '今天也要吃', 'SNACK', 'https://cdn.pixabay.com/photo/2016/10/30/09/30/hot-chocolate-1782623_1280.jpg', 2, '2025-05-23 18:20:33', '2025-06-17 21:14:21', '吃完覺得靈魂被淨化了'),
-(16, '開動囉食堂', 'SNACK', 'https://cdn.pixabay.com/photo/2020/04/04/15/07/sushi-5002639_1280.jpg', 1, '2024-07-09 14:25:49', '2025-05-18 21:56:09', '下次不要再點一樣的'),
-(17, '再吃會胖屋', 'SNACK', 'https://cdn.pixabay.com/photo/2016/11/08/10/39/chicken-1807883_1280.jpg', 3, '2024-12-01 18:04:11', '2024-12-22 19:53:57', '我吃過最像家裡煮的外食'),
-(18, '今晚我想來點', 'MAIN', NULL, 5, '2024-08-30 17:06:01', '2025-05-24 14:01:15', '我吃過最像家裡煮的外食'),
-(19, '隨便煮煮', 'SNACK', NULL, 2, '2025-05-06 15:53:28', '2025-06-06 19:08:19', '吃完覺得靈魂被淨化了'),
-(20, '問就是牛排', 'MAIN', 'https://cdn.pixabay.com/photo/2018/08/09/07/49/meat-3593929_1280.jpg', 2, '2025-06-27 15:45:56', '2025-06-30 20:23:50', '跟照片長得不一樣'),
-(21, '阿母的味道', 'MAIN', 'https://cdn.pixabay.com/photo/2014/01/09/10/14/kimchi-fried-rice-241051_1280.jpg', 4, '2025-06-19 15:23:25', '2025-06-19 15:23:25', '打卡專用'),
-(22, '乾乾拌拌', 'MAIN', 'https://cdn.pixabay.com/photo/2020/03/31/01/56/fried-rice-4985989_1280.jpg', 0, NULL, '2025-01-01 17:39:53', '服務態度比飯好'),
-(23, '湯多一點', 'MAIN', NULL, 0, NULL, '2024-08-22 18:52:38', '打卡專用'),
-(24, '三分鐘上桌', 'DRINK', 'https://cdn.pixabay.com/photo/2023/05/31/11/14/smoothie-8031132_1280.jpg', 2, '2025-02-22 16:13:56', '2025-07-10 13:22:28', '笑死喝個飲料還能打翻'),
-(25, '醬太多', 'MAIN', NULL, 2, '2025-03-12 14:58:55', '2025-05-27 21:02:10', '不錯吃，就是太貴'),
-(26, '外送也排隊', 'SNACK', 'https://cdn.pixabay.com/photo/2022/01/18/19/30/salad-6948004_1280.jpg', 1, '2025-04-20 13:20:59', '2025-06-15 20:32:33', '我吃過最像家裡煮的外食'),
-(27, '地獄廚神', 'MAIN', 'https://cdn.pixabay.com/photo/2022/05/12/17/05/hamburger-7191898_1280.jpg', 4, '2025-06-11 13:08:44', '2025-07-04 16:28:39', '跟照片長得不一樣'),
-(28, '炸你全家', 'MAIN', 'https://cdn.pixabay.com/photo/2019/09/26/18/23/republic-of-korea-4506696_1280.jpg', 3, '2024-07-20 21:34:47', '2024-08-12 20:14:40', '服務態度比飯好'),
-(29, '四號桌別跑', 'MAIN', NULL, 5, '2025-03-23 21:42:51', '2025-04-24 16:31:03', '我吃過最像家裡煮的外食'),
-(30, '小籠包大冒險', 'MAIN', NULL, 1, '2025-03-01 14:08:57', '2025-05-31 15:01:01', '店員帥加一星'),
-(31, '我不挑食', 'DRINK', 'https://cdn.pixabay.com/photo/2016/08/26/21/16/carrot-juice-1623157_960_720.jpg', 2, '2025-01-16 17:39:31', '2025-01-16 17:39:31', '招牌是健康'),
-(32, '隱藏口袋店', 'MAIN', 'https://cdn.pixabay.com/photo/2019/08/09/08/14/steak-4394612_1280.jpg', 1, '2025-05-30 14:09:28', '2025-05-30 14:09:28', '服務態度比飯好'),
-(33, '鹽味本舖', 'MAIN', 'https://cdn.pixabay.com/photo/2021/10/21/12/38/pho-ga-6729006_1280.jpg', 1, '2025-02-16 13:08:24', '2025-03-05 18:50:37', '老闆只信三樣東西，鹽、柴魚和他的直覺'),
-(34, '苦瓜別加', 'SNACK', NULL, 0, NULL, '2025-03-28 13:45:17', '下次不要再點一樣的'),
-(35, '咖哩真香', 'MAIN', 'https://cdn.pixabay.com/photo/2015/10/01/14/29/curry-967086_640.jpg', 0, NULL, '2024-10-10 20:24:30', '下次不要再點一樣的'),
-(36, '牛奶加點糖', 'DRINK', NULL, 1, '2024-09-12 15:23:17', '2025-06-26 15:27:34', '打卡專用'),
-(37, '甜到蛀牙', 'DRINK', 'https://cdn.pixabay.com/photo/2018/01/26/15/21/hot-3108893_640.jpg', 2, '2024-07-29 16:09:25', '2024-08-09 15:56:33', '我喝過最甜的飲料'),
-(38, '炸雞不香嗎', 'MAIN', 'https://cdn.pixabay.com/photo/2022/05/06/16/17/broasted-chicken-7178658_1280.jpg', 0, NULL, '2024-07-22 17:49:21', '笑死吃個飯還能打翻'),
-(39, '漢堡很圓', 'SNACK', 'https://cdn.pixabay.com/photo/2016/05/25/10/43/hamburger-1414423_1280.jpg', 1, '2024-07-03 19:34:16', '2024-10-20 14:17:39', '服務態度比飯好'),
-(40, '一杯不到五十', 'DRINK', 'https://cdn.pixabay.com/photo/2022/11/04/00/40/juice-7568712_1280.jpg', 0, NULL, '2024-08-17 18:33:01', '我喝過最像樣的飲料'),
-(41, '續杯會後悔', 'DRINK', 'https://cdn.pixabay.com/photo/2018/03/13/11/39/fruit-3222313_640.jpg', 3, '2024-11-27 20:33:17', '2024-12-18 21:58:12', '跟照片長得不一樣'),
-(42, '拌飯拌心情', 'MAIN', 'https://cdn.pixabay.com/photo/2015/04/10/00/41/food-715542_1280.jpg', 1, '2024-10-04 21:09:25', '2025-06-25 17:09:48', '不錯吃，就是太貴'),
-(43, '吃完不後悔', 'SNACK', 'https://cdn.pixabay.com/photo/2020/02/22/08/55/the-cake-4869920_1280.jpg', 4, '2025-05-20 16:45:33', '2025-05-20 16:45:33', '打卡專用');
-
-INSERT INTO users 
-(user_id, username, user_password, roles, created_date, last_modified_date) VALUES
-(1, 'John', '$2a$10$IPcuuRROJ4dRttbvQtVm4.w98d5EjmIhjjtoGx5DpTbgPm8y40HXe', 'USER', '2025-07-20 00:47:56', '2025-07-20 00:47:56'),
-(2, 'Michael', '$2a$10$e2E9fmZ57LDm/TQGkztKcOFqOzkSPcZAcE5djm.W9nuRbvBKB6KpK', 'ADMIN', '2025-07-20 00:48:31', '2025-07-20 00:48:31'),
-(3, 'Jessica', '$2a$10$9ZcJtop4hkPDjD/7AtTjj./zB5mJgm7QcCnHeuIvHvRtMVycoLD.2', 'USER', '2025-07-20 00:48:35', '2025-07-20 00:48:35');
-

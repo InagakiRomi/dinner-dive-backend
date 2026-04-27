@@ -5,14 +5,7 @@
     <!-- 引入共用 head 標題 -->
     <option th:replace="~{layout/headTitle :: commonHeadTitle}"></option>
 
-    <!-- 匯入按鈕樣式 -->
-    <link rel="stylesheet" href="/css/components/buttonStyle.css">
-
-    <!-- 匯入表格樣式 -->
-    <link rel="stylesheet" href="/css/components/tableStyle.css">
-
-    <!-- 匯入導覽列樣式 -->
-    <link rel="stylesheet" href="/css/layout/navBar.css">
+    <th:block th:replace="~{layout/commonStyles :: navButtonAndTable}"></th:block>
 </head>
 <body>
     <option th:replace="~{layout/navBar :: sharedNavBar}"></option>

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 import com.romi.my_dinnerdive.config.SecurityHelper;
 import com.romi.my_dinnerdive.constant.UserCategory;
@@ -108,5 +109,20 @@ public class UserController {
         securityHelper.authenticateUser(user);
 
         return ResponseEntity.ok(user);
+    }
+
+    @PatchMapping("/users/transfer-admin")
+    @Operation(summary = "移轉群組管理權", description = "目前管理員可將管理權移轉給同群組的一般使用者")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "移轉成功"),
+            @ApiResponse(responseCode = "400", description = "目標使用者無效"),
+            @ApiResponse(responseCode = "403", description = "目前使用者非管理員")
+    })
+    public ResponseEntity<Void> transferAdmin(
+            @Parameter(description = "要接手管理員權限的使用者 ID")
+            @RequestParam Integer nextAdminUserId
+    ) {
+        userService.transferAdmin(nextAdminUserId);
+        return ResponseEntity.ok().build();
     }
 }

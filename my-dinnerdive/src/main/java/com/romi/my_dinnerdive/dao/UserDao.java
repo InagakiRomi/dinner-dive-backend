@@ -14,4 +14,13 @@ public interface UserDao {
 
     /** 建立新使用者帳號 */
     Integer createUser(UserRegisterRequest userRegisterRequest);
+
+    /** 建立新群組並回傳 group_id */
+    Integer createGroup(String groupName);
+
+    /** 同群組目前是否已有管理員 */
+    boolean hasAdminInGroup(Integer groupId);
+
+    /** 轉移群組管理權 */
+    void transferAdmin(Integer groupId, Integer currentAdminId, Integer nextAdminId);
 }

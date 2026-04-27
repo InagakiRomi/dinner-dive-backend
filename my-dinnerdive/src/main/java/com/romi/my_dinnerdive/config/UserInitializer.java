@@ -25,6 +25,7 @@ public class UserInitializer implements CommandLineRunner {
         if (userRepository.findByUsername("super").isEmpty()) {
             User user = new User();
             user.setUsername("super");
+            user.setGroupId(1);
             user.setUserPassword("$2a$10$e2E9fmZ57LDm/TQGkztKcOFqOzkSPcZAcE5djm.W9nuRbvBKB6KpK");
             user.setRoles(UserCategory.ADMIN);
             user.setCreatedDate(new Date());
@@ -36,6 +37,7 @@ public class UserInitializer implements CommandLineRunner {
         if (userRepository.findByUsername("user").isEmpty()) {
             User user = new User();
             user.setUsername("user");
+            user.setGroupId(1);
             user.setUserPassword("$2a$10$IPcuuRROJ4dRttbvQtVm4.w98d5EjmIhjjtoGx5DpTbgPm8y40HXe");
             user.setRoles(UserCategory.USER);
             user.setCreatedDate(new Date());

@@ -8,6 +8,8 @@ import com.romi.my_dinnerdive.constant.RestaurantCategory;
  * 包含分類、關鍵字、排序、分頁設定等，集中包裝成一個物件給 Service 使用
  */
 public class RestaurantQueryParams {
+    /** 所屬群組 */
+    private Integer groupId;
 
     /** 餐廳分類 */
     private RestaurantCategory category;
@@ -33,6 +35,14 @@ public class RestaurantQueryParams {
 
     public void setCategory(RestaurantCategory category) {
         this.category = category;
+    }
+
+    public Integer getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
     }
 
     public String getSearch() {

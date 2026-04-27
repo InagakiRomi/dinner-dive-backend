@@ -1,7 +1,7 @@
 import {
   createQueryString,
   getInputValue,
-  isAuthError,
+  NO_GROUP_MESSAGE,
   request,
 } from "./modules/appShared.js";
 
@@ -25,8 +25,8 @@ async function randomRestaurant() {
     }
 
     if (!response.ok) {
-        if (isAuthError(response.status)) {
-            window.showAppModal("請先登入後再使用抽餐廳功能。");
+        if (response.status === 404) {
+            window.showAppModal(NO_GROUP_MESSAGE);
         } else {
             window.showAppModal(`取得餐廳失敗（${response.status}）`);
         }
@@ -81,8 +81,6 @@ async function resetRandom() {
 
     if (response.ok) {
         window.showAppModal("抽籤紀錄已清除，開始新的抽選！");
-    } else if (isAuthError(response.status)) {
-        window.showAppModal("請先登入後再重置抽籤紀錄。");
     } else {
         window.showAppModal(`重抽失敗（${response.status}）`);
     }

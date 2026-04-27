@@ -28,8 +28,9 @@ public class RestaurantDaoImpl implements RestaurantDao {
     @Override
     @SuppressWarnings("null")
     public Integer countRestaurant(RestaurantQueryParams restaurantQueryParams){
-        String sql = "SELECT count(*) FROM restaurants WHERE 1=1";
+        String sql = "SELECT count(*) FROM restaurants WHERE group_id = :groupId";
         Map<String, Object> map = new HashMap<>();
+        map.put("groupId", restaurantQueryParams.getGroupId());
 
         // 加入查詢條件
         sql = addFilteringSql(sql, map, restaurantQueryParams);
@@ -41,10 +42,11 @@ public class RestaurantDaoImpl implements RestaurantDao {
 
     @Override
     public List<Restaurant> getRestaurants(RestaurantQueryParams restaurantQueryParams){
-        String sql = "SELECT restaurant_id, restaurant_name, category, image_url, visited_count, last_selected_at, updated_at, note " +
-                     "FROM restaurants WHERE 1=1";
+        String sql = "SELECT restaurant_id, group_id, restaurant_name, category, image_url, visited_count, last_selected_at, updated_at, note " +
+                     "FROM restaurants WHERE group_id = :groupId";
 
         Map<String, Object> map = new HashMap<>();
+        map.put("groupId", restaurantQueryParams.getGroupId());
 
         // 查詢條件
         sql = addFilteringSql(sql, map, restaurantQueryParams);
@@ -63,12 +65,13 @@ public class RestaurantDaoImpl implements RestaurantDao {
     }
 
     @Override
-    public Restaurant getRestaurantById(Integer restaurantId) {
-        String sql = "SELECT restaurant_id, restaurant_name, category, image_url, visited_count, last_selected_at, updated_at, note " +
-                     "FROM restaurants WHERE restaurant_id = :restaurantId";
+    public Restaurant getRestaurantById(Integer restaurantId, Integer groupId) {
+        String sql = "SELECT restaurant_id, group_id, restaurant_name, category, image_url, visited_count, last_selected_at, updated_at, note " +
+                     "FROM restaurants WHERE restaurant_id = :restaurantId AND group_id = :groupId";
 
         Map<String, Object> map = new HashMap<>();
         map.put("restaurantId", restaurantId);
+        map.put("groupId", groupId);
 
         List<Restaurant> restaurantList = namedParameterJdbcTemplate.query(sql, map, new RestaurantRowMapper());
 
@@ -80,11 +83,12 @@ public class RestaurantDaoImpl implements RestaurantDao {
     }
 
     @Override
-    public Integer createRestaurant(RestaurantRequest restaurantRequest) {
-        String sql = "INSERT INTO restaurants (restaurant_name, category, image_url, last_selected_at, updated_at, note) " +
-                     "VALUES (:restaurantName, :category, :imageUrl, :lastSelectedAt, :updatedAt, :note)";
+    public Integer createRestaurant(RestaurantRequest restaurantRequest, Integer groupId) {
+        String sql = "INSERT INTO restaurants (group_id, restaurant_name, category, image_url, last_selected_at, updated_at, note) " +
+                     "VALUES (:groupId, :restaurantName, :category, :imageUrl, :lastSelectedAt, :updatedAt, :note)";
 
         Map<String, Object> map = new HashMap<>();
+        map.put("groupId", groupId);
         map.put("restaurantName", restaurantRequest.getRestaurantName());
         map.put("category", restaurantRequest.getCategory().name());
         map.put("imageUrl", restaurantRequest.getImageUrl());
@@ -100,13 +104,14 @@ public class RestaurantDaoImpl implements RestaurantDao {
         return key.intValue();
     }
 
-    public void updateRestaurant(Integer restaurantId, RestaurantRequest restaurantRequest){
+    public void updateRestaurant(Integer restaurantId, RestaurantRequest restaurantRequest, Integer groupId){
         String sql = "UPDATE restaurants SET restaurant_name = :restaurantName, category = :category, " +
                      "visited_count = :visitedCount, last_selected_at = :lastSelectedAt, note = :note, updated_at = :updatedAt, image_url = :imageUrl " +
-                     "WHERE restaurant_id = :restaurantId";
+                     "WHERE restaurant_id = :restaurantId AND group_id = :groupId";
 
         Map<String, Object> map = new HashMap<>();
         map.put("restaurantId", restaurantId);
+        map.put("groupId", groupId);
 
         map.put("restaurantName", restaurantRequest.getRestaurantName());
         map.put("category", restaurantRequest.getCategory().toString());
@@ -121,11 +126,12 @@ public class RestaurantDaoImpl implements RestaurantDao {
     }
 
     @Override
-    public void deleteRestaurantById(Integer restaurantId){
-        String sql = "DELETE FROM restaurants WHERE restaurant_id = :restaurantId";
+    public void deleteRestaurantById(Integer restaurantId, Integer groupId){
+        String sql = "DELETE FROM restaurants WHERE restaurant_id = :restaurantId AND group_id = :groupId";
 
         Map<String, Object> map = new HashMap<>();
         map.put("restaurantId", restaurantId);
+        map.put("groupId", groupId);
 
         namedParameterJdbcTemplate.update(sql, map);
     }
@@ -133,9 +139,10 @@ public class RestaurantDaoImpl implements RestaurantDao {
     @Override
     @SuppressWarnings("null")
     public List<Integer> getAllRestaurantIds(RestaurantQueryParams restaurantQueryParams) {
-        String sql = "SELECT restaurant_id FROM restaurants WHERE 1=1";
+        String sql = "SELECT restaurant_id FROM restaurants WHERE group_id = :groupId";
 
         Map<String, Object> map = new HashMap<>();
+        map.put("groupId", restaurantQueryParams.getGroupId());
 
         if (restaurantQueryParams.getCategory() != null) {
             sql += " AND category = :category";
@@ -150,15 +157,16 @@ public class RestaurantDaoImpl implements RestaurantDao {
     }
 
     @Override
-    public void chooseRestaurant(Integer restaurantId){
+    public void chooseRestaurant(Integer restaurantId, Integer groupId){
         String sql = "UPDATE restaurants SET restaurant_name = :restaurantName, category = :category, " +
                      "visited_count = :visitedCount, last_selected_at = :lastSelectedAt, updated_at = :updatedAt " +
-                     "WHERE restaurant_id = :restaurantId";
+                     "WHERE restaurant_id = :restaurantId AND group_id = :groupId";
     
-        Restaurant restaurant = getRestaurantById(restaurantId);
+        Restaurant restaurant = getRestaurantById(restaurantId, groupId);
 
         Map<String, Object> map = new HashMap<>();
         map.put("restaurantId", restaurantId);
+        map.put("groupId", groupId);
         map.put("restaurantName", restaurant.getRestaurantName());
         map.put("category", restaurant.getCategory().toString());
         map.put("visitedCount", restaurant.getVisitedCount() +1);  

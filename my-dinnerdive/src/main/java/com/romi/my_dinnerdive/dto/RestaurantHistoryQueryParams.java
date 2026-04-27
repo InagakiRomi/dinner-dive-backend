@@ -2,6 +2,8 @@ package com.romi.my_dinnerdive.dto;
 
 /** 歷史紀錄查詢參數 */
 public class RestaurantHistoryQueryParams {
+    /** 所屬群組 */
+    private Integer groupId;
 
     /** 排序欄位 */
     private String orderBy;
@@ -21,6 +23,14 @@ public class RestaurantHistoryQueryParams {
 
     public void setOrderBy(String orderBy) {
         this.orderBy = orderBy;
+    }
+
+    public Integer getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
     }
 
     public String getSort() {

@@ -16,20 +16,20 @@ public interface RestaurantDao {
     List<Restaurant> getRestaurants(RestaurantQueryParams restaurantQueryParams);
 
     /** 根據餐廳 ID 查詢單筆資料 */
-    Restaurant getRestaurantById(Integer restaurantId);
+    Restaurant getRestaurantById(Integer restaurantId, Integer groupId);
 
     /** 新增餐廳資料，回傳自動產生的餐廳 ID */
-    Integer createRestaurant(RestaurantRequest restaurantRequest);
+    Integer createRestaurant(RestaurantRequest restaurantRequest, Integer groupId);
 
     /** 更新指定餐廳的所有欄位 */
-    void updateRestaurant(Integer restaurantId, RestaurantRequest restaurantRequest);
+    void updateRestaurant(Integer restaurantId, RestaurantRequest restaurantRequest, Integer groupId);
 
     /** 刪除指定 ID 的餐廳資料 */
-    void deleteRestaurantById(Integer restaurantId);
+    void deleteRestaurantById(Integer restaurantId, Integer groupId);
 
     /** 取得所有符合條件的餐廳 ID 清單 */
     List<Integer> getAllRestaurantIds(RestaurantQueryParams restaurantQueryParams);
 
     /** 選定一間餐廳，更新選擇次數與時間 */
-    void chooseRestaurant(Integer restaurantId);
+    void chooseRestaurant(Integer restaurantId, Integer groupId);
 }

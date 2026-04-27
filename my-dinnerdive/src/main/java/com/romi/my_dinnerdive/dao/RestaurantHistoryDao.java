@@ -13,7 +13,7 @@ public interface RestaurantHistoryDao {
     void createHistory(Restaurant restaurant);
 
     /** 查詢歷史紀錄總數 */
-    Integer countHistory();
+    Integer countHistory(Integer groupId);
 
     /** 查詢歷史紀錄列表 */
     List<RestaurantHistory> getHistories(RestaurantHistoryQueryParams queryParams);

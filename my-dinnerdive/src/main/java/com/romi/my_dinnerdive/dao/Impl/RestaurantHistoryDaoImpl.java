@@ -32,10 +32,11 @@ public class RestaurantHistoryDaoImpl implements RestaurantHistoryDao {
     @Override
     public void createHistory(Restaurant restaurant) {
         String sql = "INSERT INTO restaurant_history " +
-                "(restaurant_id, restaurant_name, category, selected_at) " +
-                "VALUES (:restaurantId, :restaurantName, :category, :selectedAt)";
+                "(group_id, restaurant_id, restaurant_name, category, selected_at) " +
+                "VALUES (:groupId, :restaurantId, :restaurantName, :category, :selectedAt)";
 
         Map<String, Object> map = new HashMap<>();
+        map.put("groupId", restaurant.getGroupId());
         map.put("restaurantId", restaurant.getRestaurantId());
         map.put("restaurantName", restaurant.getRestaurantName());
         map.put("category", restaurant.getCategory().name());
@@ -46,9 +47,11 @@ public class RestaurantHistoryDaoImpl implements RestaurantHistoryDao {
 
     @Override
     @SuppressWarnings("null")
-    public Integer countHistory() {
-        String sql = "SELECT count(*) FROM restaurant_history";
-        return namedParameterJdbcTemplate.queryForObject(sql, new HashMap<>(), Integer.class);
+    public Integer countHistory(Integer groupId) {
+        String sql = "SELECT count(*) FROM restaurant_history WHERE group_id = :groupId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("groupId", groupId);
+        return namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
     }
 
     @Override
@@ -59,10 +62,12 @@ public class RestaurantHistoryDaoImpl implements RestaurantHistoryDao {
 
         String sql = "SELECT history_id, restaurant_id, restaurant_name, category, selected_at " +
                 "FROM restaurant_history " +
+                "WHERE group_id = :groupId " +
                 "ORDER BY " + orderBy + " " + sort + " " +
                 "LIMIT :limit OFFSET :offset";
 
         Map<String, Object> map = new HashMap<>();
+        map.put("groupId", queryParams.getGroupId());
         map.put("limit", queryParams.getLimit());
         map.put("offset", queryParams.getOffset());
 

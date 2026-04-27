@@ -1,4 +1,4 @@
-import { isAuthError, redirectTo, request } from "./modules/appShared.js";
+import { redirectTo, request } from "./modules/appShared.js";
 
 // 目前頁面對應的餐廳編號（由 body data attribute 帶入）。
 let restaurantId;
@@ -53,8 +53,6 @@ async function listDishes() {
     console.error("取得菜單失敗，status:", response.status);
     if (response.status === 404) {
       showRestaurantNotFound();
-    } else if (isAuthError(response.status)) {
-      window.showAppModal("請先登入後再查看餐點資料。");
     }
     return;
   }
@@ -136,7 +134,7 @@ async function deleteDish(event) {
     if (response.ok) {
       window.showAppModal("刪除成功！");
       await listDishes();
-    } else if (isAuthError(response.status)) {
+    } else if (response.status === 403) {
       window.showAppModal("只有管理員帳號可以刪除餐廳資料！");
     } else {
       window.showAppModal(`刪除失敗（${response.status}）`);

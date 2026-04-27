@@ -14,6 +14,10 @@ public class Restaurant {
     @Schema(description = "餐廳唯一識別 ID", example = "1")
     private Integer restaurantId;
 
+    /** 所屬群組 ID */
+    @Schema(description = "所屬群組 ID", example = "1")
+    private Integer groupId;
+
     /** 餐廳名稱 */
     @Schema(description = "餐廳名稱", example = "阿明牛肉麵")
     private String restaurantName;
@@ -56,6 +60,14 @@ public class Restaurant {
 
     public void setRestaurantName(String restaurantName) {
         this.restaurantName = restaurantName;
+    }
+
+    public Integer getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
     }
 
     public RestaurantCategory getCategory() {
