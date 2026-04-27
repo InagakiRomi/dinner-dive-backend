@@ -23,4 +23,16 @@ public interface UserDao {
 
     /** 轉移群組管理權 */
     void transferAdmin(Integer groupId, Integer currentAdminId, Integer nextAdminId);
+
+    /** 取得群組名稱 */
+    String getGroupNameByGroupId(Integer groupId);
+
+    /** 取得群組內所有成員 */
+    java.util.List<User> getUsersByGroupId(Integer groupId);
+
+    /** 修改群組名稱 */
+    void updateGroupName(Integer groupId, String groupName);
+
+    /** 刪除群組成員 */
+    void deleteUserById(Integer userId, Integer groupId);
 }

@@ -163,4 +163,43 @@ public class RestaurantHistoryControllerTest {
         assertTrue(ex.getCause() instanceof ConstraintViolationException);
         assertTrue(ex.getCause().getMessage().contains("getRestaurantHistories.offset"));
     }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Transactional
+    @Test
+    void shouldFallbackToDefaultOrderByWhenOrderByIsInvalid() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.patch("/choose/{restaurantId}", 1))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/restaurantHistories")
+                        .param("orderBy", "drop_table")
+                        .param("sort", "DESC")
+                        .param("limit", "1")
+                        .param("offset", "0"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results", hasSize(1)))
+                .andExpect(jsonPath("$.results[0].restaurantId").value(1));
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Transactional
+    @Test
+    void shouldFallbackToAscWhenSortValueIsInvalid() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.patch("/choose/{restaurantId}", 1))
+                .andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.patch("/choose/{restaurantId}", 2))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/restaurantHistories")
+                        .param("orderBy", "selected_at")
+                        .param("sort", "INVALID")
+                        .param("limit", "2")
+                        .param("offset", "0"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results", hasSize(2)))
+                .andExpect(jsonPath("$.results[0].restaurantId").value(1))
+                .andExpect(jsonPath("$.results[1].restaurantId").value(2));
+    }
 }

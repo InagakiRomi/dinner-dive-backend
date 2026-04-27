@@ -43,6 +43,8 @@ public class GlobalModelAttribute {
         addUsernameToModel(model, principal);
         // 把使用者角色資訊放到 model 裡
         addUserRolesToModel(model);
+        // 團隊名稱與管理員狀態
+        addGroupInfoToModel(model, principal);
     }
 
     /** 將使用者名稱放入 model */
@@ -96,18 +98,31 @@ public class GlobalModelAttribute {
             return;
         }
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isGeneralUser = auth != null
-                && auth.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .anyMatch("ROLE_USER"::equals);
-
         User user = userDao.getUserByUsername(principal.getName());
-        boolean isUserWithoutGroup = isGeneralUser && user != null && Integer.valueOf(1).equals(user.getGroupId());
+        boolean isUserWithoutGroup = user != null
+                && userDao.getGroupNameByGroupId(user.getGroupId()) == null;
 
         model.addAttribute("restrictedView", isUserWithoutGroup);
         if (isUserWithoutGroup) {
             model.addAttribute("restrictedMessage", "還沒有加入任何群組哦請尋找管理員加入群組");
         }
+    }
+
+    /** 將團隊名稱與管理員狀態放入 model */
+    private void addGroupInfoToModel(Model model, Principal principal) {
+        // 依登入名稱查使用者，準備給畫面顯示群組資訊
+        User user = userDao.getUserByUsername(principal.getName());
+        if (user == null) {
+            // 使用者不存在時提供安全預設值，避免 Thymeleaf 取值出錯
+            model.addAttribute("groupName", "");
+            model.addAttribute("isAdmin", false);
+            return;
+        }
+
+        // 群組名稱可能為 null（尚未加入群組），統一轉成空字串供前端顯示
+        String groupName = userDao.getGroupNameByGroupId(user.getGroupId());
+        model.addAttribute("groupName", groupName == null ? "" : groupName);
+        // 提供是否為管理員旗標，供頁面控制權限相關按鈕顯示
+        model.addAttribute("isAdmin", user.getRoles() == UserCategory.ADMIN);
     }
 }

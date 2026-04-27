@@ -18,4 +18,16 @@ public interface UserService {
 
     /** 轉移目前群組的管理權限 */
     void transferAdmin(Integer nextAdminUserId);
+
+    /** 取得目前登入者所在群組名稱 */
+    String getCurrentGroupName();
+
+    /** 取得目前登入者所在群組成員 */
+    java.util.List<User> getCurrentGroupMembers();
+
+    /** 修改目前登入者所在群組名稱 */
+    void updateCurrentGroupName(String groupName);
+
+    /** 刪除目前登入者所在群組成員 */
+    void deleteCurrentGroupMember(Integer targetUserId);
 }

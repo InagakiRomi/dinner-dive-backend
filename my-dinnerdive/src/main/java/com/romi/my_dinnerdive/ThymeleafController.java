@@ -39,6 +39,12 @@ public class ThymeleafController {
     public String restaurantHistoryPage() {
         return "dinnerHome/restaurantHistory";
     }
+
+    /** 成員管理頁面 */
+    @GetMapping("/dinnerHome/memberManagement")
+    public String memberManagementPage() {
+        return "dinnerHome/memberManagement";
+    }
     
     /** 餐廳一覽頁面 */
     @GetMapping("dinnerHome/listRestaurant")

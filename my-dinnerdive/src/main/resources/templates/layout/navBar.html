@@ -8,8 +8,11 @@
         <!-- 導覽列標題 -->
         <!-- <div class="logo">🍜 美食地圖</div> -->
 
-        <!-- 帳號名稱 -->
-        <div class="logo" th:text="'Hello！' + ${username}"></div>
+        <!-- 帳號名稱與團隊名稱 -->
+        <div class="logo-group">
+          <div class="logo" th:text="'Hello！' + ${username}"></div>
+          <div class="group-name" th:text="'團隊：' + ${groupName}"></div>
+        </div>
         <!-- 帳號權限 -->
         <div class="role-info">
           <span
@@ -53,6 +56,14 @@
               href="/dinnerHome/restaurantHistory"
               class="navButton navButton--coffee"
               >歷史紀錄</a
+            >
+          </li>
+
+          <li>
+            <a
+              href="/dinnerHome/memberManagement"
+              class="navButton navButton--coffee"
+              >成員管理</a
             >
           </li>
 

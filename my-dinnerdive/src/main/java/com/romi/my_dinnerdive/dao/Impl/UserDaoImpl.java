@@ -131,4 +131,46 @@ public class UserDaoImpl implements UserDao{
         namedParameterJdbcTemplate.update(demoteSql, map);
         namedParameterJdbcTemplate.update(promoteSql, map);
     }
+
+    @Override
+    public String getGroupNameByGroupId(Integer groupId) {
+        String sql = "SELECT group_name FROM user_groups WHERE group_id = :groupId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("groupId", groupId);
+
+        List<String> groupNames = namedParameterJdbcTemplate.queryForList(sql, map, String.class);
+        if (groupNames.size() > 0) {
+            return groupNames.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public List<User> getUsersByGroupId(Integer groupId) {
+        String sql = "SELECT user_id, group_id, username, user_password, roles, created_date, last_modified_date " +
+                "FROM users WHERE group_id = :groupId ORDER BY roles DESC, user_id ASC";
+        Map<String, Object> map = new HashMap<>();
+        map.put("groupId", groupId);
+        return namedParameterJdbcTemplate.query(sql, map, new UserRowMapper());
+    }
+
+    @Override
+    public void updateGroupName(Integer groupId, String groupName) {
+        String sql = "UPDATE user_groups SET group_name = :groupName, last_modified_date = :lastModifiedDate " +
+                "WHERE group_id = :groupId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("groupId", groupId);
+        map.put("groupName", groupName);
+        map.put("lastModifiedDate", new Date());
+        namedParameterJdbcTemplate.update(sql, map);
+    }
+
+    @Override
+    public void deleteUserById(Integer userId, Integer groupId) {
+        String sql = "DELETE FROM users WHERE user_id = :userId AND group_id = :groupId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", userId);
+        map.put("groupId", groupId);
+        namedParameterJdbcTemplate.update(sql, map);
+    }
 }

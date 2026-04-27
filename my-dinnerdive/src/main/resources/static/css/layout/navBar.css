@@ -66,6 +66,18 @@ body.pinkTheme {
     text-shadow: 0 1px 1px var(--color-logo-shadow);    /* 白色陰影提亮文字 */
 }
 
+.logo-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.group-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-nav-text);
+}
+
 /* ==== 導覽列中間文字 ==== */
 .label-bold {
     font-size: 1.1rem;               /* 字體大小 */
@@ -181,6 +193,11 @@ body.pinkTheme {
         width: 100%;
         text-align: center;
         font-size: 1.5rem;
+    }
+
+    .logo-group {
+        width: 100%;
+        align-items: center;
     }
 
     .role-info {

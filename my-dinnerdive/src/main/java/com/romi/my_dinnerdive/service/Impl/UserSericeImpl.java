@@ -1,6 +1,7 @@
 package com.romi.my_dinnerdive.service.Impl;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.util.StringUtils;
 
 import com.romi.my_dinnerdive.dao.UserDao;
 import com.romi.my_dinnerdive.dto.UserLoginRequest;
@@ -99,6 +101,54 @@ public class UserSericeImpl implements UserService{
         }
 
         userDao.transferAdmin(currentUser.getGroupId(), currentUser.getUserId(), nextAdminUserId);
+    }
+
+    @Override
+    public String getCurrentGroupName() {
+        User currentUser = getCurrentUser();
+        return userDao.getGroupNameByGroupId(currentUser.getGroupId());
+    }
+
+    @Override
+    public List<User> getCurrentGroupMembers() {
+        User currentUser = getCurrentUser();
+        return userDao.getUsersByGroupId(currentUser.getGroupId());
+    }
+
+    @Override
+    public void updateCurrentGroupName(String groupName) {
+        User currentUser = getCurrentUser();
+        ensureAdmin(currentUser);
+
+        if (!StringUtils.hasText(groupName)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "團隊名稱不可為空");
+        }
+
+        userDao.updateGroupName(currentUser.getGroupId(), groupName.trim());
+    }
+
+    @Override
+    @Transactional
+    public void deleteCurrentGroupMember(Integer targetUserId) {
+        User currentUser = getCurrentUser();
+        ensureAdmin(currentUser);
+
+        if (currentUser.getUserId().equals(targetUserId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "不可刪除自己");
+        }
+
+        User targetUser = userDao.getUserById(targetUserId);
+        if (targetUser == null || !currentUser.getGroupId().equals(targetUser.getGroupId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "目標使用者不存在或不在同群組");
+        }
+
+        userDao.deleteUserById(targetUserId, currentUser.getGroupId());
+    }
+
+    private void ensureAdmin(User user) {
+        if (user.getRoles() != com.romi.my_dinnerdive.constant.UserCategory.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只有管理員可以進行此操作");
+        }
     }
 
     private User getCurrentUser() {

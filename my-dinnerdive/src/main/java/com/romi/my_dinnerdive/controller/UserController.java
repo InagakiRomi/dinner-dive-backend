@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.romi.my_dinnerdive.config.SecurityHelper;
 import com.romi.my_dinnerdive.constant.UserCategory;
@@ -15,6 +17,8 @@ import com.romi.my_dinnerdive.dto.UserLoginRequest;
 import com.romi.my_dinnerdive.dto.UserRegisterRequest;
 import com.romi.my_dinnerdive.model.User;
 import com.romi.my_dinnerdive.service.UserService;
+import java.util.List;
+import java.util.Map;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -123,6 +127,39 @@ public class UserController {
             @RequestParam Integer nextAdminUserId
     ) {
         userService.transferAdmin(nextAdminUserId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/users/group-name")
+    @Operation(summary = "取得目前群組名稱", description = "回傳目前登入者所在群組名稱")
+    public ResponseEntity<Map<String, String>> getCurrentGroupName() {
+        String groupName = userService.getCurrentGroupName();
+        return ResponseEntity.ok(Map.of("groupName", groupName == null ? "" : groupName));
+    }
+
+    @PatchMapping("/users/group-name")
+    @Operation(summary = "修改目前群組名稱", description = "僅管理員可修改目前群組名稱")
+    public ResponseEntity<Void> updateCurrentGroupName(
+            @Parameter(description = "新的團隊名稱")
+            @RequestParam String groupName
+    ) {
+        userService.updateCurrentGroupName(groupName);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/users/group-members")
+    @Operation(summary = "取得群組成員清單", description = "回傳目前登入者所在群組所有成員")
+    public ResponseEntity<List<User>> getCurrentGroupMembers() {
+        return ResponseEntity.ok(userService.getCurrentGroupMembers());
+    }
+
+    @DeleteMapping("/users/group-members")
+    @Operation(summary = "刪除群組成員", description = "僅管理員可刪除同群組成員")
+    public ResponseEntity<Void> deleteCurrentGroupMember(
+            @Parameter(description = "要刪除的使用者 ID")
+            @RequestParam Integer targetUserId
+    ) {
+        userService.deleteCurrentGroupMember(targetUserId);
         return ResponseEntity.ok().build();
     }
 }

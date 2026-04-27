@@ -11,12 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -406,6 +410,109 @@ public class UserControllerTest {
 
         mockMvc.perform(registerBuilder)
                 .andExpect(status().isConflict());
+    }
+
+    @WithMockUser(username = "super", roles = {"ADMIN"})
+    @Test
+    public void shouldReturnCurrentGroupNameWhenAuthenticated() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/group-name"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.groupName", equalTo("Test Team")));
+    }
+
+    @WithMockUser(username = "super", roles = {"ADMIN"})
+    @Test
+    public void shouldReturnCurrentGroupMembersWhenAuthenticated() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/group-members"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].username", hasItem("super")))
+                .andExpect(jsonPath("$[*].username", hasItem("user")));
+    }
+
+    @WithMockUser(username = "super", roles = {"ADMIN"})
+    @Transactional
+    @Test
+    public void shouldUpdateCurrentGroupNameWhenAdmin() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/users/group-name")
+                        .param("groupName", "Night Shift Team"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/group-name"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.groupName", equalTo("Night Shift Team")));
+    }
+
+    @WithMockUser(username = "user", roles = {"USER"})
+    @Test
+    public void shouldReturnForbiddenWhenNonAdminUpdatesGroupName() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/users/group-name")
+                        .param("groupName", "Not Allowed"))
+                .andExpect(status().isForbidden());
+    }
+
+    @WithMockUser(username = "super", roles = {"ADMIN"})
+    @Test
+    public void shouldReturnBadRequestWhenAdminUpdatesGroupNameWithBlankValue() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/users/group-name")
+                        .param("groupName", "   "))
+                .andExpect(status().isBadRequest());
+    }
+
+    @WithMockUser(username = "super", roles = {"ADMIN"})
+    @Transactional
+    @Test
+    public void shouldTransferAdminWhenTargetIsInSameGroup() throws Exception {
+        Integer nextAdminUserId = userDao.getUserByUsername("user").getUserId();
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/users/transfer-admin")
+                        .param("nextAdminUserId", String.valueOf(nextAdminUserId)))
+                .andExpect(status().isOk());
+
+        assertEquals(UserCategory.USER, userDao.getUserByUsername("super").getRoles());
+        assertEquals(UserCategory.ADMIN, userDao.getUserByUsername("user").getRoles());
+    }
+
+    @WithMockUser(username = "super", roles = {"ADMIN"})
+    @Test
+    public void shouldReturnBadRequestWhenTransferAdminTargetIsNotInSameGroup() throws Exception {
+        Integer guestUserId = userDao.getUserByUsername("guest").getUserId();
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .patch("/users/transfer-admin")
+                        .param("nextAdminUserId", String.valueOf(guestUserId)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @WithMockUser(username = "super", roles = {"ADMIN"})
+    @Transactional
+    @Test
+    public void shouldDeleteCurrentGroupMemberWhenAdminDeletesSameGroupUser() throws Exception {
+        Integer targetUserId = userDao.getUserByUsername("user").getUserId();
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/users/group-members")
+                        .param("targetUserId", String.valueOf(targetUserId)))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/group-members"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*].username", hasItem("super")))
+                .andExpect(jsonPath("$[*].username", not(hasItem("user"))));
+    }
+
+    @WithMockUser(username = "super", roles = {"ADMIN"})
+    @Test
+    public void shouldReturnBadRequestWhenAdminDeletesSelfFromGroupMembers() throws Exception {
+        Integer currentUserId = userDao.getUserByUsername("super").getUserId();
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/users/group-members")
+                        .param("targetUserId", String.valueOf(currentUserId)))
+                .andExpect(status().isBadRequest());
     }
 
     private void register(UserRegisterRequest userRegisterRequest) throws Exception {

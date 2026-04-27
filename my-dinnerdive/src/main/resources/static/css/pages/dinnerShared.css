@@ -1,0 +1,151 @@
+.member-page {
+    max-width: 980px;
+    margin: 24px auto;
+    padding: 0 16px;
+}
+
+.member-card {
+    margin: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: #fffaf4;
+    border: 1px solid #eee0cc;
+}
+
+.member-title {
+    margin: 0 0 12px;
+    color: #5c4033;
+}
+
+.member-group-form {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.member-group-form input {
+    min-width: 240px;
+    padding: 6px 12px;
+    font-size: 1em;
+    color: #5c4033;
+    background-color: #fffaf4;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.member-role-admin {
+    color: #b54708;
+    font-weight: 700;
+}
+
+.member-table th:nth-child(4),
+.member-table td:nth-child(4) {
+    width: 200px;
+}
+
+form#listForm > div,
+form#historyForm > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+form#listForm > div {
+    width: calc(100% - 40px);
+    margin: 20px;
+    max-width: none;
+}
+
+form#historyForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 20px;
+    flex-wrap: wrap;
+}
+
+.list-form-add-btn {
+    margin-left: auto;
+}
+
+form#listForm input[type="text"],
+form#listForm select,
+form#historyForm select {
+    padding: 6px 12px;
+    font-size: 1em;
+    color: #5c4033;
+    background-color: #fffaf4;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.listFormActions,
+.historyFormActions {
+    margin-left: auto;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+}
+
+.switchPageBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin: 30px 0;
+    font-weight: bold;
+    color: #5c4033;
+}
+
+@media (max-width: 1024px) {
+    form#listForm > div,
+    form#historyForm {
+        margin: 16px;
+    }
+
+    .switchPageBtn {
+        gap: 12px;
+        margin: 22px 0;
+    }
+}
+
+@media (max-width: 767px) {
+    form#listForm > div,
+    form#historyForm > div {
+        margin: 12px;
+        gap: 10px;
+        width: 100%;
+    }
+
+    form#listForm label,
+    form#listForm input[type="text"],
+    form#listForm select,
+    form#historyForm label,
+    form#historyForm select,
+    form#historyForm .btn,
+    form#listForm .btn {
+        width: 100%;
+    }
+
+    .list-form-add-btn {
+        margin-left: 0;
+    }
+
+    form#historyForm {
+        margin: 12px;
+    }
+
+    .historyFormActions {
+        margin-left: 0;
+        justify-content: space-between;
+    }
+
+    .switchPageBtn {
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 0.95rem;
+        padding: 0 12px;
+    }
+}
