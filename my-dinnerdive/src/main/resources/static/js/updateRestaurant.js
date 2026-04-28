@@ -33,6 +33,7 @@ async function updateRestaurant() {
   const restaurantJson = {
     restaurantName: getInputValue("restaurantName"),
     category: getInputValue("category"),
+    groupDisplayOrder: getNumberInputValue("groupDisplayOrder", 0),
     visitedCount: getNumberInputValue("visitedCount", 0),
     lastSelectedAt: getInputValue("lastSelectedAt"),
     note: getInputValue("note"),

@@ -27,6 +27,8 @@ async function randomRestaurant() {
     if (!response.ok) {
         if (response.status === 404) {
             window.showAppModal(NO_GROUP_MESSAGE);
+        } else if (response.status === 400) {
+            window.showAppModal("請建立至少一筆餐廳資料");
         } else {
             window.showAppModal(`取得餐廳失敗（${response.status}）`);
         }

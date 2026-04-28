@@ -76,7 +76,7 @@ function renderRestaurantRows(restaurants) {
   restaurants.forEach((restaurant) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${restaurant.restaurantId}</td>
+      <td>${restaurant.groupDisplayOrder ?? "-"}</td>
       <td class="noteCell">${restaurant.restaurantName}</td>
       <td>
         <img src="${restaurant.imageUrl}"

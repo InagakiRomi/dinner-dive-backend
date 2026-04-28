@@ -75,8 +75,8 @@ public class RestaurantController {
             @RequestParam(required = false) String search,               // 可選：模糊搜尋
 
             // 排序
-            @Parameter(description = "排序欄位，預設 restaurant_id")
-            @RequestParam(defaultValue = "restaurant_id") String orderBy, // 排序欄位，預設 ID
+            @Parameter(description = "排序欄位，預設 group_display_order")
+            @RequestParam(defaultValue = "group_display_order") String orderBy, // 排序欄位，預設群組顯示排序
             @Parameter(description = "排序方式，預設 ASC，可填 ASC 或 DESC")
             @RequestParam(defaultValue = "ASC") String sort,              // 排序方式，預設升冪
 
@@ -189,6 +189,19 @@ public class RestaurantController {
         return ResponseEntity.status(HttpStatus.CREATED).body(restaurant);
     }
 
+    /** 取得新增餐廳時的下一個群組顯示排序值 */
+    @GetMapping("/restaurants/nextGroupDisplayOrder")
+    @Operation(
+            summary = "取得下一個群組顯示排序",
+            description = "回傳目前群組可用的下一個 groupDisplayOrder（max + 1）"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "取得成功")
+    })
+    public ResponseEntity<Integer> getNextGroupDisplayOrder() {
+        return ResponseEntity.status(HttpStatus.OK).body(restaurantService.getNextGroupDisplayOrder());
+    }
+
     /**
      * 修改一筆指定 ID 的餐廳資料
      *
@@ -285,6 +298,9 @@ public class RestaurantController {
 
          // 抽出一筆隨機餐廳
         Restaurant random = restaurantService.getRandomRestaurant(params);
+        if (random == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
 
         // 回傳餐廳資料
         return ResponseEntity.ok(new RestaurantResponse(random));

@@ -85,6 +85,7 @@ public class RestaurantControllerTest {
         RestaurantRequest restaurantRequest = new RestaurantRequest();
         restaurantRequest.setRestaurantName("都不NONO");
         restaurantRequest.setCategory(RestaurantCategory.DRINK);
+        restaurantRequest.setGroupDisplayOrder(200);
         restaurantRequest.setImageUrl("http://test.com");
         restaurantRequest.setNote("布丁五姊妹好喝");
 
@@ -98,6 +99,7 @@ public class RestaurantControllerTest {
         mockMvc.perform(requestBuilder)
                 .andExpect(status().is(201))
                 .andExpect(jsonPath("$.restaurantName", equalTo("都不NONO")))
+                .andExpect(jsonPath("$.groupDisplayOrder", equalTo(200)))
                 .andExpect(jsonPath("$.category", equalTo("DRINK")))
                 .andExpect(jsonPath("$.imageUrl", equalTo("http://test.com")))
                 .andExpect(jsonPath("$.visitedCount", equalTo(0)))
@@ -114,6 +116,7 @@ public class RestaurantControllerTest {
         RestaurantRequest restaurantRequest = new RestaurantRequest();
         restaurantRequest.setRestaurantName("好棒棒喔");
         restaurantRequest.setCategory(RestaurantCategory.SNACK);
+        restaurantRequest.setGroupDisplayOrder(201);
         restaurantRequest.setImageUrl("http://test.food");
         restaurantRequest.setVisitedCount(6);
         restaurantRequest.setNote("肌肉猛男開的專賣店");
@@ -128,6 +131,7 @@ public class RestaurantControllerTest {
         mockMvc.perform(requestBuilder)
                 .andExpect(status().is(200))
                 .andExpect(jsonPath("$.restaurantName", equalTo("好棒棒喔")))
+                .andExpect(jsonPath("$.groupDisplayOrder", equalTo(201)))
                 .andExpect(jsonPath("$.category", equalTo("SNACK")))
                 .andExpect(jsonPath("$.imageUrl", equalTo("http://test.food")))
                 .andExpect(jsonPath("$.visitedCount", equalTo(6)))
@@ -143,6 +147,7 @@ public class RestaurantControllerTest {
         RestaurantRequest restaurantRequest = new RestaurantRequest();
         restaurantRequest.setRestaurantName("好棒棒喔");
         restaurantRequest.setCategory(RestaurantCategory.SNACK);
+        restaurantRequest.setGroupDisplayOrder(202);
         restaurantRequest.setImageUrl("http://test.food");
         restaurantRequest.setVisitedCount(6);
         restaurantRequest.setNote("肌肉猛男開的專賣店");
@@ -273,6 +278,7 @@ public class RestaurantControllerTest {
         RestaurantRequest restaurantRequest = new RestaurantRequest();
         restaurantRequest.setRestaurantName("乾乾拌拌");
         restaurantRequest.setCategory(RestaurantCategory.MAIN);
+        restaurantRequest.setGroupDisplayOrder(22);
         restaurantRequest.setImageUrl("https://cdn.pixabay.com/photo/2020/03/31/01/56/fried-rice-4985989_1280.jpg");
         restaurantRequest.setVisitedCount(0);
         restaurantRequest.setNote("服務態度比飯好");
@@ -341,10 +347,12 @@ public class RestaurantControllerTest {
         RestaurantRequest restaurantRequest = new RestaurantRequest();
         if ("WITHOUT_NAME".equals(scenario)) {
             restaurantRequest.setCategory(RestaurantCategory.MAIN);
+            restaurantRequest.setGroupDisplayOrder(203);
             restaurantRequest.setImageUrl("http://test.com/no-name");
             restaurantRequest.setNote("缺少店名測試");
         } else if ("WITHOUT_CATEGORY".equals(scenario)) {
             restaurantRequest.setRestaurantName("缺分類餐廳");
+            restaurantRequest.setGroupDisplayOrder(204);
             restaurantRequest.setImageUrl("http://test.com/no-category");
         } else {
             throw new IllegalArgumentException("Unsupported scenario: " + scenario);
@@ -374,6 +382,26 @@ public class RestaurantControllerTest {
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
+    void shouldReturnBadRequestWhenCreateRestaurantWithDuplicateGroupDisplayOrder() throws Exception {
+        RestaurantRequest restaurantRequest = new RestaurantRequest();
+        restaurantRequest.setRestaurantName("重複排序測試店");
+        restaurantRequest.setCategory(RestaurantCategory.MAIN);
+        restaurantRequest.setGroupDisplayOrder(1);
+        restaurantRequest.setImageUrl("http://test.com/duplicate-group-display-order");
+        restaurantRequest.setNote("同群組 groupDisplayOrder 不可重複");
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/restaurants")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(restaurantRequest));
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", equalTo("同群組內 groupDisplayOrder 不可重複")));
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Test
     void shouldReturnRandomRestaurantWhenCategoryIsValid() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/random")
@@ -397,6 +425,14 @@ public class RestaurantControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isBadRequest());
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Test
+    void shouldReturnNextGroupDisplayOrderForCreateRestaurant() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/restaurants/nextGroupDisplayOrder"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", notNullValue()));
     }
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})

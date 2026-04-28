@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import com.romi.my_dinnerdive.dao.DishDao;
 import com.romi.my_dinnerdive.dao.RestaurantDao;
@@ -63,12 +65,21 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public Integer createRestaurant(RestaurantRequest restaurantRequest) {
-        return restaurantDao.createRestaurant(restaurantRequest, getCurrentGroupId());
+        Integer groupId = getCurrentGroupId();
+        validateUniqueGroupDisplayOrder(groupId, restaurantRequest.getGroupDisplayOrder(), null);
+        return restaurantDao.createRestaurant(restaurantRequest, groupId);
+    }
+
+    @Override
+    public Integer getNextGroupDisplayOrder() {
+        return restaurantDao.getNextGroupDisplayOrder(getCurrentGroupId());
     }
 
     @Override
     public void updateRestaurant(Integer restaurantId, RestaurantRequest restaurantRequest){
-        restaurantDao.updateRestaurant(restaurantId, restaurantRequest, getCurrentGroupId());
+        Integer groupId = getCurrentGroupId();
+        validateUniqueGroupDisplayOrder(groupId, restaurantRequest.getGroupDisplayOrder(), restaurantId);
+        restaurantDao.updateRestaurant(restaurantId, restaurantRequest, groupId);
     }
 
     @Override
@@ -155,5 +166,14 @@ public class RestaurantServiceImpl implements RestaurantService {
             return 1;
         }
         return user.getGroupId();
+    }
+
+    private void validateUniqueGroupDisplayOrder(Integer groupId, Integer groupDisplayOrder, Integer excludeRestaurantId) {
+        if (restaurantDao.existsGroupDisplayOrder(groupId, groupDisplayOrder, excludeRestaurantId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "同群組內 groupDisplayOrder 不可重複"
+            );
+        }
     }
 }

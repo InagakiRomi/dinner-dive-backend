@@ -38,6 +38,13 @@
             </select>
             <br>
 
+            <label for="groupDisplayOrder">群組顯示排序：</label>
+            <input type="number" id="groupDisplayOrder"
+                   th:value="${restaurants.groupDisplayOrder}"
+                   min="1" required
+                   placeholder="同群組內不可重複">
+            <br>
+
             <!-- 餐廳被選擇次數 -->
             <label for="visitedCount">選擇次數：</label>
             <input type="number" id="visitedCount"

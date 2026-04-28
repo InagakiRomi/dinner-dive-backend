@@ -21,6 +21,9 @@ public interface RestaurantDao {
     /** 新增餐廳資料，回傳自動產生的餐廳 ID */
     Integer createRestaurant(RestaurantRequest restaurantRequest, Integer groupId);
 
+    /** 取得同群組下一個可用的顯示排序值（max + 1） */
+    Integer getNextGroupDisplayOrder(Integer groupId);
+
     /** 更新指定餐廳的所有欄位 */
     void updateRestaurant(Integer restaurantId, RestaurantRequest restaurantRequest, Integer groupId);
 
@@ -32,4 +35,7 @@ public interface RestaurantDao {
 
     /** 選定一間餐廳，更新選擇次數與時間 */
     void chooseRestaurant(Integer restaurantId, Integer groupId);
+
+    /** 檢查同群組內排序 ID 是否已存在（可排除指定餐廳） */
+    boolean existsGroupDisplayOrder(Integer groupId, Integer groupDisplayOrder, Integer excludeRestaurantId);
 }

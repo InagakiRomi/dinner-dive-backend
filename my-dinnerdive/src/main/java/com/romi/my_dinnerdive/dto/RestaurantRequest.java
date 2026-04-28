@@ -6,6 +6,7 @@ import com.romi.my_dinnerdive.constant.RestaurantCategory;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 /** 用於接收前端傳送過來的 JSON 資料，新增或修改餐廳時使用 */
@@ -21,6 +22,12 @@ public class RestaurantRequest {
     @Schema(description = "餐廳分類，可填 MAIN、SNACK、DRINK", example = "MAIN")
     @NotNull
     private RestaurantCategory category;
+
+    /** 群組內排序 ID（同群組不可重複） */
+    @Schema(description = "群組內排序 ID（同群組不可重複）", example = "10")
+    @NotNull
+    @Min(1)
+    private Integer groupDisplayOrder;
 
     /** 餐廳圖片URL */
     @Schema(description = "餐廳圖片網址", example = "https://example.com/restaurant.jpg")
@@ -56,6 +63,14 @@ public class RestaurantRequest {
 
     public void setCategory(RestaurantCategory category) {
         this.category = category;
+    }
+
+    public Integer getGroupDisplayOrder() {
+        return groupDisplayOrder;
+    }
+
+    public void setGroupDisplayOrder(Integer groupDisplayOrder) {
+        this.groupDisplayOrder = groupDisplayOrder;
     }
 
     public String getImageUrl() {

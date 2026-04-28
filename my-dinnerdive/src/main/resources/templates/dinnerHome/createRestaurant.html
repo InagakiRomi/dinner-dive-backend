@@ -1,52 +1,67 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <!-- 引入共用 head 標題 -->
     <option th:replace="~{layout/headTitle :: commonHeadTitle}"></option>
 
-    <th:block th:replace="~{layout/commonStyles :: navButtonAndForm}"></th:block>
-</head>
-<body>
+    <th:block
+      th:replace="~{layout/commonStyles :: navButtonAndForm}"
+    ></th:block>
+  </head>
+  <body>
     <option th:replace="~{layout/navBar :: sharedNavBar}"></option>
 
     <!-- 返回餐廳一覽按鈕 -->
     <button th:replace="~{modules/categoryButton :: listButton}"></button>
-    
+
     <!-- 處理創建餐廳資料邏輯 -->
     <script type="module" src="/js/createRestaurant.js"></script>
-    
+
     <!--新增餐廳資訊-->
     <div class="formContainer">
-        <h1>新增餐廳</h1>
-        <form id="createForm">
+      <h1>新增餐廳</h1>
+      <form id="createForm">
+        <!-- 餐廳名稱 -->
+        <label for="restaurantName">餐廳名稱：</label>
+        <input
+          type="text"
+          id="restaurantName"
+          required
+          maxlength="64"
+          placeholder="最多可輸入64個字"
+        />
 
-            <!-- 餐廳名稱 -->
-            <label for="restaurantName">餐廳名稱：</label>
-            <input type="text" id="restaurantName"
-                   required maxlength="64"
-                   placeholder="最多可輸入64個字">
+        <!-- 餐廳類別選單 -->
+        <label for="category">餐廳類別：</label>
+        <select id="category">
+          <option
+            th:replace="~{modules/categoryButton :: foodCategory}"
+          ></option>
+        </select>
 
-            <!-- 餐廳類別選單 -->
-            <label for="category">餐廳類別：</label>
-            <select id="category">
-                <option th:replace="~{modules/categoryButton :: foodCategory}"></option>
-            </select>
+        <input type="hidden" id="groupDisplayOrder" />
 
-            <!-- 備註欄位 -->
-            <label for="note">備註：</label>
-            <textarea type="text" id="note"
-                      maxlength="512"
-                      placeholder="最多可輸入512個字"></textarea>
+        <!-- 備註欄位 -->
+        <label for="note">備註：</label>
+        <textarea
+          type="text"
+          id="note"
+          maxlength="512"
+          placeholder="最多可輸入512個字"
+        ></textarea>
 
-            <!-- 餐廳圖片 URL -->
-            <label for="imageUrl">圖片Url：</label>
-            <input type="url" id="imageUrl"
-                   maxlength="256"
-                   placeholder="最多可輸入256個字">
+        <!-- 餐廳圖片 URL -->
+        <label for="imageUrl">圖片Url：</label>
+        <input
+          type="url"
+          id="imageUrl"
+          maxlength="256"
+          placeholder="最多可輸入256個字"
+        />
 
-            <!-- 提交按鈕 -->
-            <button type="submit" class="btn btn-default btn-wide">新增餐廳</button>
-        </form>
+        <!-- 提交按鈕 -->
+        <button type="submit" class="btn btn-default btn-wide">新增餐廳</button>
+      </form>
     </div>
-</body>
+  </body>
 </html>

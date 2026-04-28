@@ -18,6 +18,10 @@ public class Restaurant {
     @Schema(description = "所屬群組 ID", example = "1")
     private Integer groupId;
 
+    /** 群組內排序 ID（同群組不可重複） */
+    @Schema(description = "群組內排序 ID（同群組不可重複）", example = "10")
+    private Integer groupDisplayOrder;
+
     /** 餐廳名稱 */
     @Schema(description = "餐廳名稱", example = "阿明牛肉麵")
     private String restaurantName;
@@ -68,6 +72,14 @@ public class Restaurant {
 
     public void setGroupId(Integer groupId) {
         this.groupId = groupId;
+    }
+
+    public Integer getGroupDisplayOrder() {
+        return groupDisplayOrder;
+    }
+
+    public void setGroupDisplayOrder(Integer groupDisplayOrder) {
+        this.groupDisplayOrder = groupDisplayOrder;
     }
 
     public RestaurantCategory getCategory() {

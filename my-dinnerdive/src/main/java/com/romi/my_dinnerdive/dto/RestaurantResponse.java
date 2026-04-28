@@ -18,6 +18,10 @@ public class RestaurantResponse {
     @Schema(description = "餐廳名稱", example = "阿明牛肉麵")
     private String restaurantName;
 
+    /** 群組內排序 ID（同群組不可重複） */
+    @Schema(description = "群組內排序 ID（同群組不可重複）", example = "10")
+    private Integer groupDisplayOrder;
+
     /** 餐廳分類 */
     @Schema(description = "餐廳分類顯示名稱", example = "主食")
     private String  category;
@@ -49,6 +53,7 @@ public class RestaurantResponse {
     public RestaurantResponse(Restaurant restaurant) {
         this.restaurantId = restaurant.getRestaurantId();
         this.restaurantName = restaurant.getRestaurantName();
+        this.groupDisplayOrder = restaurant.getGroupDisplayOrder();
 
         // 將 enum 轉為對應的顯示名稱（如 "MAIN" → "主食"）
         this.category = restaurant.getCategory().getDisplayName();
@@ -66,6 +71,10 @@ public class RestaurantResponse {
 
     public String getRestaurantName() {
         return restaurantName;
+    }
+
+    public Integer getGroupDisplayOrder() {
+        return groupDisplayOrder;
     }
 
     public String getCategory() {

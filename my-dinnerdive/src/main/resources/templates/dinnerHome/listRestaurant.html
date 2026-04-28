@@ -1,89 +1,96 @@
 <!-- 餐廳一覽頁面 -->
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <!-- 引入共用 head 標題 -->
     <option th:replace="~{layout/headTitle :: commonHeadTitle}"></option>
 
-    <th:block th:replace="~{layout/commonStyles :: navButtonAndTable}"></th:block>
+    <th:block
+      th:replace="~{layout/commonStyles :: navButtonAndTable}"
+    ></th:block>
     <link rel="stylesheet" href="/css/pages/dinnerShared.css" />
-</head>
-<body>
+  </head>
+  <body>
     <option th:replace="~{layout/navBar :: sharedNavBar}"></option>
 
     <!-- 餐廳列表查詢表單 -->
     <form id="listForm">
-        <div>
-            <!-- 類別篩選 -->
-            <label for="category">餐廳類別：</label>
-            <select id="category">
-                <option th:replace="~{modules/categoryButton :: foodCategoryAll}"></option>
-            </select>
+      <div>
+        <!-- 類別篩選 -->
+        <label for="category">餐廳類別：</label>
+        <select id="category">
+          <option
+            th:replace="~{modules/categoryButton :: foodCategoryAll}"
+          ></option>
+        </select>
 
-            <!-- 關鍵字查詢 -->
-            <label for="search">關鍵字：</label>
-            <input type="text" id="search" placeholder="輸入餐廳名稱或備註內容">
-        </div>
+        <!-- 關鍵字查詢 -->
+        <label for="search">關鍵字：</label>
+        <input type="text" id="search" placeholder="輸入餐廳名稱或備註內容" />
+      </div>
 
-        <div>
-            <!-- 排序方式 -->
-            <select id="orderBy">
-                <option value="restaurant_id">建立順序</option>
-                <option value="category">類別</option>
-                <option value="visited_count">選擇次數</option>
-                <option value="last_selected_at">最後選擇時間</option>
-                <option value="updated_at">最後修改時間</option>
-            </select>
+      <div>
+        <!-- 排序方式 -->
+        <select id="orderBy">
+          <option value="group_display_order">群組顯示排序</option>
+          <option value="restaurant_id">建立時間順序</option>
+          <option value="category">類別</option>
+          <option value="visited_count">選擇次數</option>
+          <option value="last_selected_at">最後選擇時間</option>
+          <option value="updated_at">最後修改時間</option>
+        </select>
 
-            <select id="sort">
-                <option value="ASC">最舊/最少</option>
-                <option value="DESC">最新/最多</option>
-            </select>
-        </div>
+        <select id="sort">
+          <option value="ASC">最舊/最少</option>
+          <option value="DESC">最新/最多</option>
+        </select>
+      </div>
 
-        <div class="listFormActions">
-            <!-- 查詢按鈕 -->
-            <button type="submit" class="btn btn-default">查詢</button>
+      <div class="listFormActions">
+        <!-- 查詢按鈕 -->
+        <button type="submit" class="btn btn-default">查詢</button>
 
-            <!-- 新增餐廳按鈕 -->
-            <button
-                type="button"
-                class="btn btn-green list-form-add-btn"
-                data-route="/dinnerHome/createRestaurant">
-                新增餐廳
-            </button>
-        </div>
+        <!-- 新增餐廳按鈕 -->
+        <button
+          type="button"
+          class="btn btn-green list-form-add-btn"
+          data-route="/dinnerHome/createRestaurant"
+        >
+          新增餐廳
+        </button>
+      </div>
     </form>
 
     <!-- 餐廳清單表格 -->
     <table class="table">
-        <thead>
-            <tr>
-                <th>編號</th>
-                <th>餐廳名稱</th>
-                <th>圖片</th>
-                <th>類別</th>
-                <th>選擇次數</th>
-                <th>最後選擇時間</th>
-                <th>最後修改時間</th>
-                <th>備註</th>
-                <th>操作</th>
-            </tr>
-        </thead>
+      <thead>
+        <tr>
+          <th>排序ID</th>
+          <th>餐廳名稱</th>
+          <th>圖片</th>
+          <th>類別</th>
+          <th>選擇次數</th>
+          <th>最後選擇時間</th>
+          <th>最後修改時間</th>
+          <th>備註</th>
+          <th>操作</th>
+        </tr>
+      </thead>
 
-        <tbody id="tableBody">
-            <!-- 表格資料將由 JS 動態載入 -->
-        </tbody>
+      <tbody id="tableBody">
+        <!-- 表格資料將由 JS 動態載入 -->
+      </tbody>
     </table>
 
     <!-- 分頁控制 -->
     <div class="switchPageBtn">
-        <button id="prevPage" class="btn btn-default">上一頁</button>
-        <div style="white-space: nowrap;">第1頁 / 共10頁</div> <!-- 數字是動態控制 -->
-        <button id="nextPage" class="btn btn-default">下一頁</button>
+      <button id="prevPage" class="btn btn-default">上一頁</button>
+      <div style="white-space: nowrap">第1頁 / 共10頁</div>
+      <!-- 數字是動態控制 -->
+      <button id="nextPage" class="btn btn-default">下一頁</button>
     </div>
 
     <!-- 處理資料庫匯入列表裡邏輯 -->
     <script type="module" src="/js/listRestaurant.js"></script>
-</body>
+  </body>
 </html>

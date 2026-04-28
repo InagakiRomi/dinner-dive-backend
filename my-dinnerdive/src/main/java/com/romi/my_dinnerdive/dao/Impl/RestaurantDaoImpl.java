@@ -42,7 +42,7 @@ public class RestaurantDaoImpl implements RestaurantDao {
 
     @Override
     public List<Restaurant> getRestaurants(RestaurantQueryParams restaurantQueryParams){
-        String sql = "SELECT restaurant_id, group_id, restaurant_name, category, image_url, visited_count, last_selected_at, updated_at, note " +
+        String sql = "SELECT restaurant_id, group_id, group_display_order, restaurant_name, category, image_url, visited_count, last_selected_at, updated_at, note " +
                      "FROM restaurants WHERE group_id = :groupId";
 
         Map<String, Object> map = new HashMap<>();
@@ -66,7 +66,7 @@ public class RestaurantDaoImpl implements RestaurantDao {
 
     @Override
     public Restaurant getRestaurantById(Integer restaurantId, Integer groupId) {
-        String sql = "SELECT restaurant_id, group_id, restaurant_name, category, image_url, visited_count, last_selected_at, updated_at, note " +
+        String sql = "SELECT restaurant_id, group_id, group_display_order, restaurant_name, category, image_url, visited_count, last_selected_at, updated_at, note " +
                      "FROM restaurants WHERE restaurant_id = :restaurantId AND group_id = :groupId";
 
         Map<String, Object> map = new HashMap<>();
@@ -84,11 +84,12 @@ public class RestaurantDaoImpl implements RestaurantDao {
 
     @Override
     public Integer createRestaurant(RestaurantRequest restaurantRequest, Integer groupId) {
-        String sql = "INSERT INTO restaurants (group_id, restaurant_name, category, image_url, last_selected_at, updated_at, note) " +
-                     "VALUES (:groupId, :restaurantName, :category, :imageUrl, :lastSelectedAt, :updatedAt, :note)";
+        String sql = "INSERT INTO restaurants (group_id, group_display_order, restaurant_name, category, image_url, last_selected_at, updated_at, note) " +
+                     "VALUES (:groupId, :groupDisplayOrder, :restaurantName, :category, :imageUrl, :lastSelectedAt, :updatedAt, :note)";
 
         Map<String, Object> map = new HashMap<>();
         map.put("groupId", groupId);
+        map.put("groupDisplayOrder", restaurantRequest.getGroupDisplayOrder());
         map.put("restaurantName", restaurantRequest.getRestaurantName());
         map.put("category", restaurantRequest.getCategory().name());
         map.put("imageUrl", restaurantRequest.getImageUrl());
@@ -104,8 +105,16 @@ public class RestaurantDaoImpl implements RestaurantDao {
         return key.intValue();
     }
 
+    @Override
+    public Integer getNextGroupDisplayOrder(Integer groupId) {
+        String sql = "SELECT COALESCE(MAX(group_display_order), 0) + 1 FROM restaurants WHERE group_id = :groupId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("groupId", groupId);
+        return namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+    }
+
     public void updateRestaurant(Integer restaurantId, RestaurantRequest restaurantRequest, Integer groupId){
-        String sql = "UPDATE restaurants SET restaurant_name = :restaurantName, category = :category, " +
+        String sql = "UPDATE restaurants SET group_display_order = :groupDisplayOrder, restaurant_name = :restaurantName, category = :category, " +
                      "visited_count = :visitedCount, last_selected_at = :lastSelectedAt, note = :note, updated_at = :updatedAt, image_url = :imageUrl " +
                      "WHERE restaurant_id = :restaurantId AND group_id = :groupId";
 
@@ -113,6 +122,7 @@ public class RestaurantDaoImpl implements RestaurantDao {
         map.put("restaurantId", restaurantId);
         map.put("groupId", groupId);
 
+        map.put("groupDisplayOrder", restaurantRequest.getGroupDisplayOrder());
         map.put("restaurantName", restaurantRequest.getRestaurantName());
         map.put("category", restaurantRequest.getCategory().toString());
         map.put("visitedCount", restaurantRequest.getVisitedCount());
@@ -174,6 +184,22 @@ public class RestaurantDaoImpl implements RestaurantDao {
         map.put("updatedAt", new Date());
 
         namedParameterJdbcTemplate.update(sql, map);
+    }
+
+    @Override
+    public boolean existsGroupDisplayOrder(Integer groupId, Integer groupDisplayOrder, Integer excludeRestaurantId) {
+        String sql = "SELECT COUNT(*) FROM restaurants WHERE group_id = :groupId AND group_display_order = :groupDisplayOrder";
+        Map<String, Object> map = new HashMap<>();
+        map.put("groupId", groupId);
+        map.put("groupDisplayOrder", groupDisplayOrder);
+
+        if (excludeRestaurantId != null) {
+            sql += " AND restaurant_id <> :excludeRestaurantId";
+            map.put("excludeRestaurantId", excludeRestaurantId);
+        }
+
+        Integer count = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+        return count != null && count > 0;
     }
 
     /** 共用查詢條件處理方法，根據參數動態加上 WHERE 條件 */

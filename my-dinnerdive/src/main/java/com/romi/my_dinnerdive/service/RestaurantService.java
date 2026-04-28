@@ -22,6 +22,9 @@ public interface RestaurantService {
     /** 新增餐廳 */
     Integer createRestaurant(RestaurantRequest restaurantRequest);
 
+    /** 取得同群組新增餐廳時下一個顯示排序 */
+    Integer getNextGroupDisplayOrder();
+
     /** 修改指定餐廳資料 */
     void updateRestaurant(Integer restaurantId, RestaurantRequest restaurantRequest);
 
