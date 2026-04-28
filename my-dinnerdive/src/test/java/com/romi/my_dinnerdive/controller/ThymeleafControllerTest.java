@@ -1,6 +1,8 @@
 package com.romi.my_dinnerdive.controller;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,51 +30,19 @@ public class ThymeleafControllerTest {
     }
 
     @WithMockUser(username = "super", roles = {"ADMIN"})
-    @Test
-    void shouldRenderRandomRestaurantPageWhenAuthenticated() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/dinnerHome/randomRestaurant"))
+    @ParameterizedTest
+    @CsvSource({
+            "/dinnerHome/randomRestaurant,dinnerHome/randomRestaurant",
+            "/dinnerHome/noGroup,dinnerHome/noGroup",
+            "/dinnerHome/restaurantHistory,dinnerHome/restaurantHistory",
+            "/dinnerHome/memberManagement,dinnerHome/memberManagement",
+            "/dinnerHome/listRestaurant,dinnerHome/listRestaurant",
+            "/dinnerHome/createRestaurant,dinnerHome/createRestaurant"
+    })
+    void shouldRenderSimpleDinnerHomePagesWhenAuthenticated(String path, String viewName) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(path))
                 .andExpect(status().isOk())
-                .andExpect(view().name("dinnerHome/randomRestaurant"));
-    }
-
-    @WithMockUser(username = "super", roles = {"ADMIN"})
-    @Test
-    void shouldRenderNoGroupPageWhenAuthenticated() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/dinnerHome/noGroup"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("dinnerHome/noGroup"));
-    }
-
-    @WithMockUser(username = "super", roles = {"ADMIN"})
-    @Test
-    void shouldRenderRestaurantHistoryPageWhenAuthenticated() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/dinnerHome/restaurantHistory"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("dinnerHome/restaurantHistory"));
-    }
-
-    @WithMockUser(username = "super", roles = {"ADMIN"})
-    @Test
-    void shouldRenderMemberManagementPageWhenAuthenticated() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/dinnerHome/memberManagement"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("dinnerHome/memberManagement"));
-    }
-
-    @WithMockUser(username = "super", roles = {"ADMIN"})
-    @Test
-    void shouldRenderListRestaurantPageWhenAuthenticated() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/dinnerHome/listRestaurant"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("dinnerHome/listRestaurant"));
-    }
-
-    @WithMockUser(username = "super", roles = {"ADMIN"})
-    @Test
-    void shouldRenderCreateRestaurantPageWhenAuthenticated() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/dinnerHome/createRestaurant"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("dinnerHome/createRestaurant"));
+                .andExpect(view().name(viewName));
     }
 
     @WithMockUser(username = "super", roles = {"ADMIN"})

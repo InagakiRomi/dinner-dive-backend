@@ -2,12 +2,16 @@ package com.romi.my_dinnerdive.config;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.romi.my_dinnerdive.constant.UserCategory;
 import com.romi.my_dinnerdive.dao.UserDao;
 import com.romi.my_dinnerdive.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +26,19 @@ import static org.mockito.Mockito.when;
 
 class GlobalModelAttributeTest {
 
+    private static Stream<Arguments> roleCases() {
+        return Stream.of(
+                Arguments.of("member", UserCategory.USER, "ROLE_USER", "一般使用者", false),
+                Arguments.of("super", UserCategory.ADMIN, "ROLE_ADMIN", "管理員", true)
+        );
+    }
+
+    private GlobalModelAttribute buildAdvice(UserDao userDao) {
+        GlobalModelAttribute advice = new GlobalModelAttribute();
+        ReflectionTestUtils.setField(advice, "userDao", userDao);
+        return advice;
+    }
+
     @AfterEach
     void clearSecurityContext() {
         SecurityContextHolder.clearContext();
@@ -29,9 +46,8 @@ class GlobalModelAttributeTest {
 
     @Test
     void shouldSetRestrictedViewFalseAndSkipUserInfoWhenPrincipalIsNull() {
-        GlobalModelAttribute advice = new GlobalModelAttribute();
         UserDao userDao = mock(UserDao.class);
-        ReflectionTestUtils.setField(advice, "userDao", userDao);
+        GlobalModelAttribute advice = buildAdvice(userDao);
         Model model = new ExtendedModelMap();
 
         advice.addUserInfoToModel(model, null);
@@ -44,9 +60,8 @@ class GlobalModelAttributeTest {
 
     @Test
     void shouldSetRestrictedMessageWhenUserHasNoGroupName() {
-        GlobalModelAttribute advice = new GlobalModelAttribute();
         UserDao userDao = mock(UserDao.class);
-        ReflectionTestUtils.setField(advice, "userDao", userDao);
+        GlobalModelAttribute advice = buildAdvice(userDao);
         Model model = new ExtendedModelMap();
 
         User user = new User();
@@ -75,37 +90,42 @@ class GlobalModelAttributeTest {
         assertEquals(false, model.getAttribute("isAdmin"));
     }
 
-    @Test
-    void shouldSetUserRoleDisplayNameAndGroupInfoWhenPrincipalExists() {
-        GlobalModelAttribute advice = new GlobalModelAttribute();
+    @ParameterizedTest
+    @MethodSource("roleCases")
+    void shouldSetUserRoleDisplayNameAndGroupInfoWhenPrincipalExists(
+            String username,
+            UserCategory role,
+            String authority,
+            String expectedRoleDisplay,
+            boolean expectedIsAdmin) {
         UserDao userDao = mock(UserDao.class);
-        ReflectionTestUtils.setField(advice, "userDao", userDao);
+        GlobalModelAttribute advice = buildAdvice(userDao);
         Model model = new ExtendedModelMap();
 
         User user = new User();
         user.setUserId(2);
-        user.setUsername("super");
+        user.setUsername(username);
         user.setGroupId(1);
-        user.setRoles(UserCategory.ADMIN);
+        user.setRoles(role);
 
-        when(userDao.getUserByUsername("super")).thenReturn(user);
+        when(userDao.getUserByUsername(username)).thenReturn(user);
         when(userDao.getGroupNameByGroupId(1)).thenReturn("Test Team");
 
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(
-                        "super",
+                        username,
                         "N/A",
                         List.of(
-                                new SimpleGrantedAuthority("ROLE_ADMIN"),
+                                new SimpleGrantedAuthority(authority),
                                 new SimpleGrantedAuthority("ROLE_UNKNOWN"))));
 
-        Principal principal = () -> "super";
+        Principal principal = () -> username;
         advice.addUserInfoToModel(model, principal);
 
         assertEquals(false, model.getAttribute("restrictedView"));
-        assertEquals("super", model.getAttribute("username"));
-        assertEquals("管理員", model.getAttribute("roles"));
+        assertEquals(username, model.getAttribute("username"));
+        assertEquals(expectedRoleDisplay, model.getAttribute("roles"));
         assertEquals("Test Team", model.getAttribute("groupName"));
-        assertEquals(true, model.getAttribute("isAdmin"));
+        assertEquals(expectedIsAdmin, model.getAttribute("isAdmin"));
     }
 }

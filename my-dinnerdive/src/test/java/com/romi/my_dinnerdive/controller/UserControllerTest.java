@@ -7,6 +7,7 @@ import com.romi.my_dinnerdive.dto.UserLoginRequest;
 import com.romi.my_dinnerdive.dto.UserRegisterRequest;
 import com.romi.my_dinnerdive.model.User;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -216,10 +217,11 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.userPassword", notNullValue()));
     }
 
-    @Test
-    public void shouldReturnBadRequestWhenRegisterWithMalformedJson() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"/users/register", "/users/login"})
+    public void shouldReturnBadRequestWhenRequestBodyIsMalformedJson(String path) throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/users/register")
+                .post(path)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\":\"broken\"");
 
@@ -381,17 +383,6 @@ public class UserControllerTest {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenLoginWithMalformedJson() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/users/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"broken\"");
-
-        mockMvc.perform(requestBuilder)
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     public void shouldReturnBadRequestWhenLoginRequestBodyIsEmptyJson() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/users/login")
@@ -520,18 +511,17 @@ public class UserControllerTest {
     }
 
     @WithMockUser(username = "super", roles = {"ADMIN"})
-    @Test
-    public void shouldReturnBadRequestWhenAdminUpdatesGroupNameWithoutParam() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.patch("/users/group-name"))
-                .andExpect(status().isBadRequest());
-    }
+    @ParameterizedTest
+    @CsvSource({
+            "NONE,",
+            "BLANK,'   '"
+    })
+    public void shouldReturnBadRequestWhenAdminUpdatesGroupNameWithInvalidParam(String scenario, String groupName) throws Exception {
+        RequestBuilder requestBuilder = "NONE".equals(scenario)
+                ? MockMvcRequestBuilders.patch("/users/group-name")
+                : MockMvcRequestBuilders.patch("/users/group-name").param("groupName", groupName);
 
-    @WithMockUser(username = "super", roles = {"ADMIN"})
-    @Test
-    public void shouldReturnBadRequestWhenAdminUpdatesGroupNameWithBlankValue() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .patch("/users/group-name")
-                        .param("groupName", "   "))
+        mockMvc.perform(requestBuilder)
                 .andExpect(status().isBadRequest());
     }
 
@@ -573,18 +563,18 @@ public class UserControllerTest {
     }
 
     @WithMockUser(username = "super", roles = {"ADMIN"})
-    @Test
-    public void shouldReturnBadRequestWhenTransferAdminTargetUserDoesNotExist() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .patch("/users/transfer-admin")
-                        .param("nextAdminUserId", "999999"))
-                .andExpect(status().isBadRequest());
-    }
+    @ParameterizedTest
+    @CsvSource({
+            "NONE,",
+            "NOT_EXISTS,999999"
+    })
+    public void shouldReturnBadRequestWhenTransferAdminParamInvalid(String scenario, String nextAdminUserId) throws Exception {
+        RequestBuilder requestBuilder = "NONE".equals(scenario)
+                ? MockMvcRequestBuilders.patch("/users/transfer-admin")
+                : MockMvcRequestBuilders.patch("/users/transfer-admin")
+                        .param("nextAdminUserId", nextAdminUserId);
 
-    @WithMockUser(username = "super", roles = {"ADMIN"})
-    @Test
-    public void shouldReturnBadRequestWhenTransferAdminWithoutTargetParam() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.patch("/users/transfer-admin"))
+        mockMvc.perform(requestBuilder)
                 .andExpect(status().isBadRequest());
     }
 
@@ -639,18 +629,18 @@ public class UserControllerTest {
     }
 
     @WithMockUser(username = "super", roles = {"ADMIN"})
-    @Test
-    public void shouldReturnBadRequestWhenAdminDeletesMemberThatDoesNotExist() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                        .delete("/users/group-members")
-                        .param("targetUserId", "999999"))
-                .andExpect(status().isBadRequest());
-    }
+    @ParameterizedTest
+    @CsvSource({
+            "NONE,",
+            "NOT_EXISTS,999999"
+    })
+    public void shouldReturnBadRequestWhenDeleteGroupMemberParamInvalid(String scenario, String targetUserId) throws Exception {
+        RequestBuilder requestBuilder = "NONE".equals(scenario)
+                ? MockMvcRequestBuilders.delete("/users/group-members")
+                : MockMvcRequestBuilders.delete("/users/group-members")
+                        .param("targetUserId", targetUserId);
 
-    @WithMockUser(username = "super", roles = {"ADMIN"})
-    @Test
-    public void shouldReturnBadRequestWhenDeleteGroupMemberWithoutTargetParam() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/users/group-members"))
+        mockMvc.perform(requestBuilder)
                 .andExpect(status().isBadRequest());
     }
 

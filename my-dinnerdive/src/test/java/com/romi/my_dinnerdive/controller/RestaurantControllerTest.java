@@ -1,6 +1,8 @@
 package com.romi.my_dinnerdive.controller;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -213,6 +215,17 @@ public class RestaurantControllerTest {
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
+    public void shouldReturnBadRequestWhenCategoryParamIsInvalid() throws Exception {
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .get("/restaurants")
+                .param("category", "INVALID");
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isBadRequest());
+    }
+
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @Test
     public void shouldReturnSortedRestaurantsWhenOrderByAndSortProvided() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/restaurants")
@@ -319,42 +332,32 @@ public class RestaurantControllerTest {
     }
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    @Test
-    void shouldReturnBadRequestWhenCreateRestaurantWithoutName() throws Exception {
+    @ParameterizedTest
+    @CsvSource({
+            "WITHOUT_NAME,restaurantName",
+            "WITHOUT_CATEGORY,category"
+    })
+    void shouldReturnBadRequestWhenCreateRestaurantMissingRequiredField(String scenario, String expectedField) throws Exception {
         RestaurantRequest restaurantRequest = new RestaurantRequest();
-        restaurantRequest.setCategory(RestaurantCategory.MAIN);
-        restaurantRequest.setImageUrl("http://test.com/no-name");
-        restaurantRequest.setNote("缺少店名測試");
-
-        String json = objectMapper.writeValueAsString(restaurantRequest);
+        if ("WITHOUT_NAME".equals(scenario)) {
+            restaurantRequest.setCategory(RestaurantCategory.MAIN);
+            restaurantRequest.setImageUrl("http://test.com/no-name");
+            restaurantRequest.setNote("缺少店名測試");
+        } else if ("WITHOUT_CATEGORY".equals(scenario)) {
+            restaurantRequest.setRestaurantName("缺分類餐廳");
+            restaurantRequest.setImageUrl("http://test.com/no-category");
+        } else {
+            throw new IllegalArgumentException("Unsupported scenario: " + scenario);
+        }
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/restaurants")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(json);
+                .content(objectMapper.writeValueAsString(restaurantRequest));
 
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.restaurantName", notNullValue()));
-    }
-
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
-    @Test
-    void shouldReturnBadRequestWhenCreateRestaurantWithoutCategory() throws Exception {
-        RestaurantRequest restaurantRequest = new RestaurantRequest();
-        restaurantRequest.setRestaurantName("缺分類餐廳");
-        restaurantRequest.setImageUrl("http://test.com/no-category");
-
-        String json = objectMapper.writeValueAsString(restaurantRequest);
-
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .post("/restaurants")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json);
-
-        mockMvc.perform(requestBuilder)
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.category", notNullValue()));
+                .andExpect(jsonPath("$." + expectedField, notNullValue()));
     }
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})

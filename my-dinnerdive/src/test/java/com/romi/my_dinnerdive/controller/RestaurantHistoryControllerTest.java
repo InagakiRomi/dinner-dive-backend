@@ -11,6 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import jakarta.servlet.ServletException;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -109,39 +111,20 @@ public class RestaurantHistoryControllerTest {
     }
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    @Test
-    void shouldThrowValidationWhenLimitExceedsMax() throws Exception {
+    @ParameterizedTest
+    @CsvSource({
+            "limit,1001,getRestaurantHistories.limit",
+            "offset,-1,getRestaurantHistories.offset",
+            "limit,-1,getRestaurantHistories.limit"
+    })
+    void shouldThrowValidationWhenPagingParamsInvalid(String paramName, String paramValue, String expectedMessagePart) throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/restaurantHistories")
-                .param("limit", "1001");
+                .param(paramName, paramValue);
 
         Exception ex = assertThrows(ServletException.class, () -> mockMvc.perform(requestBuilder));
         assertTrue(ex.getCause() instanceof ConstraintViolationException);
-        assertTrue(ex.getCause().getMessage().contains("getRestaurantHistories.limit"));
-    }
-
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
-    @Test
-    void shouldThrowValidationWhenOffsetIsNegative() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/restaurantHistories")
-                .param("offset", "-1");
-
-        Exception ex = assertThrows(ServletException.class, () -> mockMvc.perform(requestBuilder));
-        assertTrue(ex.getCause() instanceof ConstraintViolationException);
-        assertTrue(ex.getCause().getMessage().contains("getRestaurantHistories.offset"));
-    }
-
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
-    @Test
-    void shouldThrowValidationWhenLimitIsNegative() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/restaurantHistories")
-                .param("limit", "-1");
-
-        Exception ex = assertThrows(ServletException.class, () -> mockMvc.perform(requestBuilder));
-        assertTrue(ex.getCause() instanceof ConstraintViolationException);
-        assertTrue(ex.getCause().getMessage().contains("getRestaurantHistories.limit"));
+        assertTrue(ex.getCause().getMessage().contains(expectedMessagePart));
     }
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
