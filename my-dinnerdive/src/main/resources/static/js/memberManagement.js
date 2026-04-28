@@ -29,7 +29,10 @@ function bindEvents() {
 
     const deleteButton = event.target.closest(".delete-member-btn");
     if (deleteButton) {
-      await deleteMember(deleteButton.dataset.userId, deleteButton.dataset.username);
+      await deleteMember(
+        deleteButton.dataset.userId,
+        deleteButton.dataset.username,
+      );
     }
   });
 }
@@ -57,26 +60,27 @@ function renderRows(members) {
   tableBody.innerHTML = "";
 
   // 依 userId 升冪固定顯示順序，避免畫面跳動
-  const sortedMembers = [...members].sort((a, b) => (a.userId ?? 0) - (b.userId ?? 0));
+  const sortedMembers = [...members].sort(
+    (a, b) => (a.userId ?? 0) - (b.userId ?? 0),
+  );
 
   sortedMembers.forEach((member) => {
     const isCurrentUser = member.username === pageConfig.username;
     const isAdminMember = member.roles === "ADMIN";
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${member.userId}</td>
       <td>${member.username}</td>
       <td class="${isAdminMember ? "member-role-admin" : ""}">${isAdminMember ? "管理員" : "一般使用者"}</td>
       <td>
         ${
           pageConfig.isAdmin
-            ? `<div class="buttonGroup">
+            ? isCurrentUser
+              ? "-"
+              : `<div class="buttonGroup">
                  <button class="btn btn-default transfer-admin-btn" data-user-id="${member.userId}" ${
-                   isCurrentUser || isAdminMember ? "disabled" : ""
+                   isAdminMember ? "disabled" : ""
                  }>轉移管理員</button>
-                 <button class="btn btn-default delete-member-btn" data-user-id="${member.userId}" data-username="${member.username}" ${
-                   isCurrentUser ? "disabled" : ""
-                 }>刪除成員</button>
+                 <button class="btn btn-default delete-member-btn" data-user-id="${member.userId}" data-username="${member.username}">刪除成員</button>
                </div>`
             : "-"
         }
@@ -93,9 +97,12 @@ async function updateGroupName() {
     return;
   }
 
-  const response = await request(`/users/group-name?${createQueryString({ groupName })}`, {
-    method: "PATCH",
-  });
+  const response = await request(
+    `/users/group-name?${createQueryString({ groupName })}`,
+    {
+      method: "PATCH",
+    },
+  );
   if (!response) {
     return;
   }
@@ -139,7 +146,9 @@ async function transferAdmin(targetUserId) {
 
 async function deleteMember(targetUserId, username) {
   // 刪除前先顯示成員名稱，降低誤刪機率
-  const confirmed = await window.showAppConfirm(`確定要刪除成員 ${username} 嗎？`);
+  const confirmed = await window.showAppConfirm(
+    `確定要刪除成員 ${username} 嗎？`,
+  );
   if (!confirmed) {
     return;
   }

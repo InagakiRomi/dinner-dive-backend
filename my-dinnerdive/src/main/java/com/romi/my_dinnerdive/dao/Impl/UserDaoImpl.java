@@ -86,21 +86,22 @@ public class UserDaoImpl implements UserDao{
 
     @Override
     public Integer createGroup(String groupName) {
-        String sql = "INSERT INTO user_groups (group_name, created_date, last_modified_date) " +
-                "VALUES (:groupName, :createdDate, :lastModifiedDate)";
+        String queryNextIdSql = "SELECT COALESCE(MAX(group_id), 0) + 1 FROM user_groups";
+        Integer nextGroupId = namedParameterJdbcTemplate.queryForObject(queryNextIdSql, new HashMap<>(), Integer.class);
+
+        String sql = "INSERT INTO user_groups (group_id, group_name, created_date, last_modified_date) " +
+                "VALUES (:groupId, :groupName, :createdDate, :lastModifiedDate)";
 
         Map<String, Object> map = new HashMap<>();
         Date now = new Date();
+        map.put("groupId", nextGroupId);
         map.put("groupName", groupName);
         map.put("createdDate", now);
         map.put("lastModifiedDate", now);
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
-
-        Number key = keyHolder.getKey();
-        if (key != null) {
-            return key.intValue();
+        namedParameterJdbcTemplate.update(sql, map);
+        if (nextGroupId != null) {
+            return nextGroupId;
         }
         throw new IllegalStateException("無法取得自動產生的 group_id");
     }

@@ -1,35 +1,35 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
     <option th:replace="~{layout/headTitle :: commonHeadTitle}"></option>
     <th:block th:replace="~{layout/commonStyles :: navAndButton}"></th:block>
     <style>
-        .no-group-wrap {
-            min-height: 70vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            text-align: center;
-            padding: 0 16px;
-        }
+      .no-group-wrap {
+        min-height: 70vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        text-align: center;
+        padding: 0 16px;
+      }
 
-        .no-group-message {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #5c4033;
-        }
+      .no-group-message {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #5c4033;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="no-group-wrap">
-        <div class="no-group-message" th:text="${restrictedMessage}">
-            還沒有加入任何群組哦請尋找管理員加入群組
-        </div>
-        <form th:action="@{/logout}" method="post">
-            <button type="submit" class="navButton">登出</button>
-        </form>
+      <div class="no-group-message" th:text="${restrictedMessage}">
+        還沒有加入任何群組哦請尋找管理員加入群組
+      </div>
+      <form th:action="@{/logout}" method="post">
+        <button type="submit" class="navButton">登出</button>
+      </form>
     </div>
-</body>
+  </body>
 </html>

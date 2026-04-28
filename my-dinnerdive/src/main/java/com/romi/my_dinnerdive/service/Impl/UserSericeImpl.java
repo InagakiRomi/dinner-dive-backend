@@ -40,6 +40,7 @@ public class UserSericeImpl implements UserService{
     }
 
     @Override
+    @Transactional
     public Integer register(UserRegisterRequest userRegisterRequest){
 
         Logger logger = loggingDemo.printUserLog();
@@ -51,12 +52,14 @@ public class UserSericeImpl implements UserService{
             throw new ResponseStatusException(HttpStatus.CONFLICT, "該帳號已經被註冊");
         }
 
-        if (userRegisterRequest.getGroupId() == null) {
-            userRegisterRequest.setGroupId(1);
-        }
-
         if (userRegisterRequest.getRoles() == null) {
             userRegisterRequest.setRoles(com.romi.my_dinnerdive.constant.UserCategory.USER);
+        }
+
+        if (userRegisterRequest.getRoles() == com.romi.my_dinnerdive.constant.UserCategory.ADMIN) {
+            String defaultGroupName = userRegisterRequest.getUsername() + "的群組";
+            Integer groupId = userDao.createGroup(defaultGroupName);
+            userRegisterRequest.setGroupId(groupId);
         }
 
         // 密碼加密後儲存
