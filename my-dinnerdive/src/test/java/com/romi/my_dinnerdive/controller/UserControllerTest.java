@@ -101,21 +101,21 @@ public class UserControllerTest {
     @Test
     public void shouldRegisterUserWithRoleFromQueryParamWhenBodyRoleMissing() throws Exception {
         UserRegisterRequest userRegisterRequest = new UserRegisterRequest();
-        userRegisterRequest.setUsername("testGuestRole01");
+        userRegisterRequest.setUsername("testAdminRoleByQuery01");
         userRegisterRequest.setUserPassword("123");
 
         String json = objectMapper.writeValueAsString(userRegisterRequest);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .post("/users/register")
-                .param("roles", "GUEST")
+                .param("roles", "ADMIN")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json);
 
         mockMvc.perform(requestBuilder)
                 .andExpect(status().is(201))
-                .andExpect(jsonPath("$.username", equalTo("testGuestRole01")))
-                .andExpect(jsonPath("$.roles", equalTo("GUEST")));
+                .andExpect(jsonPath("$.username", equalTo("testAdminRoleByQuery01")))
+                .andExpect(jsonPath("$.roles", equalTo("ADMIN")));
     }
 
     @Test
@@ -543,11 +543,15 @@ public class UserControllerTest {
     @WithMockUser(username = "super", roles = {"ADMIN"})
     @Test
     public void shouldReturnBadRequestWhenTransferAdminTargetIsNotInSameGroup() throws Exception {
-        Integer guestUserId = userDao.getUserByUsername("guest").getUserId();
+        UserRegisterRequest outsider = new UserRegisterRequest();
+        outsider.setUsername("outsiderTransfer01");
+        outsider.setUserPassword("123");
+        register(outsider);
+        Integer outsiderUserId = userDao.getUserByUsername("outsiderTransfer01").getUserId();
 
         mockMvc.perform(MockMvcRequestBuilders
                         .patch("/users/transfer-admin")
-                        .param("nextAdminUserId", String.valueOf(guestUserId)))
+                        .param("nextAdminUserId", String.valueOf(outsiderUserId)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -620,11 +624,15 @@ public class UserControllerTest {
     @WithMockUser(username = "super", roles = {"ADMIN"})
     @Test
     public void shouldReturnBadRequestWhenAdminDeletesMemberNotInSameGroup() throws Exception {
-        Integer guestUserId = userDao.getUserByUsername("guest").getUserId();
+        UserRegisterRequest outsider = new UserRegisterRequest();
+        outsider.setUsername("outsiderDelete01");
+        outsider.setUserPassword("123");
+        register(outsider);
+        Integer outsiderUserId = userDao.getUserByUsername("outsiderDelete01").getUserId();
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/users/group-members")
-                        .param("targetUserId", String.valueOf(guestUserId)))
+                        .param("targetUserId", String.valueOf(outsiderUserId)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -642,6 +650,63 @@ public class UserControllerTest {
 
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isBadRequest());
+    }
+
+    @WithMockUser(username = "super", roles = {"ADMIN"})
+    @Test
+    public void shouldReturnBadRequestWhenAdminAddsGroupMemberWhoIsAlreadyInCurrentGroup() throws Exception {
+        Integer currentGroupUserId = userDao.getUserByUsername("user").getUserId();
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/users/group-members")
+                        .param("targetUserId", String.valueOf(currentGroupUserId)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", containsString("該成員已有群組")));
+    }
+
+    @WithMockUser(username = "super", roles = {"ADMIN"})
+    @Test
+    public void shouldReturnBadRequestWhenAdminAddsSelfAsGroupMember() throws Exception {
+        Integer currentUserId = userDao.getUserByUsername("super").getUserId();
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/users/group-members")
+                        .param("targetUserId", String.valueOf(currentUserId)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", containsString("不可邀請自己加入")));
+    }
+
+    @WithMockUser(username = "super", roles = {"ADMIN"})
+    @Test
+    public void shouldReturnBadRequestWhenAdminAddsNotExistingUserAsGroupMember() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/users/group-members")
+                        .param("targetUserId", "999999"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", containsString("目標使用者ID不存在")));
+    }
+
+    @WithMockUser(username = "user", roles = {"USER"})
+    @Transactional
+    @Test
+    public void shouldAllowUserToLeaveCurrentGroup() throws Exception {
+        Integer currentUserId = userDao.getUserByUsername("user").getUserId();
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/users/group-members/self"))
+                .andExpect(status().isOk());
+
+        User userAfterLeaving = userDao.getUserById(currentUserId);
+        assertNotNull(userAfterLeaving);
+        assertNull(userAfterLeaving.getGroupId());
+        assertEquals(UserCategory.USER, userAfterLeaving.getRoles());
+    }
+
+    @WithMockUser(username = "super", roles = {"ADMIN"})
+    @Test
+    public void shouldRejectWhenAdminLeavesCurrentGroup() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/users/group-members/self"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", containsString("管理員不可自行退出群組")));
     }
 
     private void register(UserRegisterRequest userRegisterRequest) throws Exception {

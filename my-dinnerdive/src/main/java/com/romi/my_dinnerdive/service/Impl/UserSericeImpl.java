@@ -109,12 +109,14 @@ public class UserSericeImpl implements UserService{
     @Override
     public String getCurrentGroupName() {
         User currentUser = getCurrentUser();
+        ensureHasGroup(currentUser);
         return userDao.getGroupNameByGroupId(currentUser.getGroupId());
     }
 
     @Override
     public List<User> getCurrentGroupMembers() {
         User currentUser = getCurrentUser();
+        ensureHasGroup(currentUser);
         return userDao.getUsersByGroupId(currentUser.getGroupId());
     }
 
@@ -122,6 +124,7 @@ public class UserSericeImpl implements UserService{
     public void updateCurrentGroupName(String groupName) {
         User currentUser = getCurrentUser();
         ensureAdmin(currentUser);
+        ensureHasGroup(currentUser);
 
         if (!StringUtils.hasText(groupName)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "團隊名稱不可為空");
@@ -135,6 +138,7 @@ public class UserSericeImpl implements UserService{
     public void deleteCurrentGroupMember(Integer targetUserId) {
         User currentUser = getCurrentUser();
         ensureAdmin(currentUser);
+        ensureHasGroup(currentUser);
 
         if (currentUser.getUserId().equals(targetUserId)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "不可刪除自己");
@@ -145,12 +149,62 @@ public class UserSericeImpl implements UserService{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "目標使用者不存在或不在同群組");
         }
 
-        userDao.deleteUserById(targetUserId, currentUser.getGroupId());
+        if (targetUser.getRoles() == com.romi.my_dinnerdive.constant.UserCategory.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "不可直接移除管理員");
+        }
+
+        userDao.removeUserFromGroup(targetUserId, currentUser.getGroupId());
+    }
+
+    @Override
+    @Transactional
+    public void addCurrentGroupMemberByUserId(Integer targetUserId) {
+        User currentUser = getCurrentUser();
+        ensureAdmin(currentUser);
+        ensureHasGroup(currentUser);
+
+        if (currentUser.getUserId().equals(targetUserId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "不可邀請自己加入");
+        }
+
+        User targetUser = userDao.getUserById(targetUserId);
+        if (targetUser == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "目標使用者ID不存在");
+        }
+
+        if (targetUser.getRoles() == com.romi.my_dinnerdive.constant.UserCategory.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "不可將其他群組管理員直接加入目前群組");
+        }
+
+        if (targetUser.getGroupId() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "該成員已有群組");
+        }
+
+        userDao.updateUserGroup(targetUserId, currentUser.getGroupId());
+    }
+
+    @Override
+    @Transactional
+    public void leaveCurrentGroup() {
+        User currentUser = getCurrentUser();
+        ensureHasGroup(currentUser);
+
+        if (currentUser.getRoles() == com.romi.my_dinnerdive.constant.UserCategory.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "管理員不可自行退出群組");
+        }
+
+        userDao.clearUserGroup(currentUser.getUserId());
     }
 
     private void ensureAdmin(User user) {
         if (user.getRoles() != com.romi.my_dinnerdive.constant.UserCategory.ADMIN) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只有管理員可以進行此操作");
+        }
+    }
+
+    private void ensureHasGroup(User user) {
+        if (user.getGroupId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "目前尚未加入任何群組");
         }
     }
 

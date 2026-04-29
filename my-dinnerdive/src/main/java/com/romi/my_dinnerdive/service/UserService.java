@@ -30,4 +30,10 @@ public interface UserService {
 
     /** 刪除目前登入者所在群組成員 */
     void deleteCurrentGroupMember(Integer targetUserId);
+
+    /** 以使用者 ID 新增成員到目前登入者群組 */
+    void addCurrentGroupMemberByUserId(Integer targetUserId);
+
+    /** 目前登入者自行退出群組 */
+    void leaveCurrentGroup();
 }

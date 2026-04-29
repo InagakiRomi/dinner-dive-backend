@@ -34,6 +34,10 @@
   border-radius: 6px;
 }
 
+.member-add-form-wrap {
+  margin-bottom: 14px;
+}
+
 .member-role-admin {
   color: #b54708;
   font-weight: 700;

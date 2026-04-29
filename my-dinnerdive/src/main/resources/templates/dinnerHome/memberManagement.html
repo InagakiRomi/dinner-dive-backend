@@ -32,6 +32,19 @@
 
       <section class="member-card">
         <h2 class="member-title">成員列表</h2>
+        <div th:if="${isAdmin}" class="member-add-form-wrap">
+          <form id="addMemberForm" class="member-group-form">
+            <input
+              id="targetUserIdInput"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="輸入要加入的使用者 ID"
+              required
+            />
+            <button type="submit" class="btn btn-default">加入成員</button>
+          </form>
+        </div>
         <table class="table member-table">
           <thead>
             <tr>

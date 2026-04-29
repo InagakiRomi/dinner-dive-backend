@@ -167,11 +167,34 @@ public class UserDaoImpl implements UserDao{
     }
 
     @Override
-    public void deleteUserById(Integer userId, Integer groupId) {
-        String sql = "DELETE FROM users WHERE user_id = :userId AND group_id = :groupId";
+    public void removeUserFromGroup(Integer userId, Integer groupId) {
+        String sql = "UPDATE users SET group_id = NULL, roles = 'USER', last_modified_date = :lastModifiedDate " +
+                "WHERE user_id = :userId AND group_id = :groupId";
         Map<String, Object> map = new HashMap<>();
         map.put("userId", userId);
         map.put("groupId", groupId);
+        map.put("lastModifiedDate", new Date());
+        namedParameterJdbcTemplate.update(sql, map);
+    }
+
+    @Override
+    public void updateUserGroup(Integer userId, Integer groupId) {
+        String sql = "UPDATE users SET group_id = :groupId, last_modified_date = :lastModifiedDate " +
+                "WHERE user_id = :userId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", userId);
+        map.put("groupId", groupId);
+        map.put("lastModifiedDate", new Date());
+        namedParameterJdbcTemplate.update(sql, map);
+    }
+
+    @Override
+    public void clearUserGroup(Integer userId) {
+        String sql = "UPDATE users SET group_id = NULL, roles = 'USER', last_modified_date = :lastModifiedDate " +
+                "WHERE user_id = :userId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", userId);
+        map.put("lastModifiedDate", new Date());
         namedParameterJdbcTemplate.update(sql, map);
     }
 }

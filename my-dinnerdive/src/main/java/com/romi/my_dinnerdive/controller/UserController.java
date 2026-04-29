@@ -66,7 +66,7 @@ public class UserController {
             )
             @RequestBody @Valid UserRegisterRequest userRegisterRequest,
             // 角色預設為 USER
-            @Parameter(description = "使用者角色，預設 USER，可填 ADMIN、USER、GUEST")
+            @Parameter(description = "使用者角色，預設 USER，可填 ADMIN、USER")
             @RequestParam(defaultValue = "USER") UserCategory roles){
         
         // 如果前端沒傳角色，手動指定為 USER
@@ -160,6 +160,23 @@ public class UserController {
             @RequestParam Integer targetUserId
     ) {
         userService.deleteCurrentGroupMember(targetUserId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/users/group-members/self")
+    @Operation(summary = "自行退出群組", description = "一般使用者可自行退出目前群組，管理員不可自行退出")
+    public ResponseEntity<Void> leaveCurrentGroup() {
+        userService.leaveCurrentGroup();
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/users/group-members")
+    @Operation(summary = "新增群組成員", description = "僅管理員可透過使用者 ID 將成員加入目前群組")
+    public ResponseEntity<Void> addCurrentGroupMemberByUserId(
+            @Parameter(description = "要加入目前群組的使用者 ID")
+            @RequestParam Integer targetUserId
+    ) {
+        userService.addCurrentGroupMemberByUserId(targetUserId);
         return ResponseEntity.ok().build();
     }
 }

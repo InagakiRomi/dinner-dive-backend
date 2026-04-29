@@ -4,6 +4,8 @@ import { createQueryString, request } from "./modules/appShared.js";
 const tableBody = document.getElementById("memberTableBody");
 const groupNameForm = document.getElementById("groupNameForm");
 const groupNameInput = document.getElementById("groupNameInput");
+const addMemberForm = document.getElementById("addMemberForm");
+const targetUserIdInput = document.getElementById("targetUserIdInput");
 const pageConfig = window.memberPageConfig ?? {};
 
 // 進入頁面後先綁事件，再載入成員列表
@@ -17,6 +19,11 @@ function bindEvents() {
   groupNameForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
     await updateGroupName();
+  });
+
+  addMemberForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    await addMemberByUserId();
   });
 
   // 使用事件委派處理表格內動態產生的按鈕
@@ -33,6 +40,12 @@ function bindEvents() {
         deleteButton.dataset.userId,
         deleteButton.dataset.username,
       );
+      return;
+    }
+
+    const leaveButton = event.target.closest(".leave-group-btn");
+    if (leaveButton) {
+      await leaveGroup();
     }
   });
 }
@@ -67,24 +80,23 @@ function renderRows(members) {
   sortedMembers.forEach((member) => {
     const isCurrentUser = member.username === pageConfig.username;
     const isAdminMember = member.roles === "ADMIN";
+    const actionHtml = pageConfig.isAdmin
+      ? isCurrentUser
+        ? "-"
+        : `<div class="buttonGroup">
+             <button class="btn btn-default transfer-admin-btn" data-user-id="${member.userId}" ${
+               isAdminMember ? "disabled" : ""
+             }>轉移管理員</button>
+             <button class="btn btn-default delete-member-btn" data-user-id="${member.userId}" data-username="${member.username}">刪除成員</button>
+           </div>`
+      : isCurrentUser
+        ? `<button class="btn btn-default leave-group-btn">退出群組</button>`
+        : "-";
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${member.username}</td>
       <td class="${isAdminMember ? "member-role-admin" : ""}">${isAdminMember ? "管理員" : "一般使用者"}</td>
-      <td>
-        ${
-          pageConfig.isAdmin
-            ? isCurrentUser
-              ? "-"
-              : `<div class="buttonGroup">
-                 <button class="btn btn-default transfer-admin-btn" data-user-id="${member.userId}" ${
-                   isAdminMember ? "disabled" : ""
-                 }>轉移管理員</button>
-                 <button class="btn btn-default delete-member-btn" data-user-id="${member.userId}" data-username="${member.username}">刪除成員</button>
-               </div>`
-            : "-"
-        }
-      </td>
+      <td>${actionHtml}</td>
     `;
     tableBody.appendChild(row);
   });
@@ -147,7 +159,7 @@ async function transferAdmin(targetUserId) {
 async function deleteMember(targetUserId, username) {
   // 刪除前先顯示成員名稱，降低誤刪機率
   const confirmed = await window.showAppConfirm(
-    `確定要刪除成員 ${username} 嗎？`,
+    `確定要將成員 ${username} 移出群組嗎？`,
   );
   if (!confirmed) {
     return;
@@ -163,10 +175,87 @@ async function deleteMember(targetUserId, username) {
 
   // 刪除成功後重新拉取列表，避免前端狀態與後端不一致
   if (response.ok) {
-    window.showAppModal("成員已刪除");
+    window.showAppModal("成員已移出群組");
     await loadMembers();
     return;
   }
 
-  window.showAppModal(`刪除成員失敗（${response.status}）`);
+  window.showAppModal(`移出成員失敗（${response.status}）`);
+}
+
+async function leaveGroup() {
+  const confirmed = await window.showAppConfirm("確定要退出群組嗎？");
+  if (!confirmed) {
+    return;
+  }
+
+  const response = await request("/users/group-members/self", { method: "DELETE" });
+  if (!response) {
+    return;
+  }
+
+  if (response.ok) {
+    window.showAppModal("你已退出群組", () => {
+      window.location.reload();
+    });
+    return;
+  }
+
+  let errorMessage = "";
+  try {
+    const errorBody = await response.json();
+    errorMessage =
+      typeof errorBody?.error === "string" ? errorBody.error.trim() : "";
+  } catch (error) {
+    console.warn("讀取退群錯誤訊息失敗:", error);
+  }
+
+  if (errorMessage) {
+    window.showAppModal(errorMessage);
+    return;
+  }
+
+  window.showAppModal(`退出群組失敗（${response.status}）`);
+}
+
+async function addMemberByUserId() {
+  const userIdValue = targetUserIdInput?.value?.trim();
+  const targetUserId = Number(userIdValue);
+  if (!Number.isInteger(targetUserId) || targetUserId <= 0) {
+    window.showAppModal("請輸入有效的使用者 ID");
+    return;
+  }
+
+  const response = await request(
+    `/users/group-members?${createQueryString({ targetUserId })}`,
+    { method: "POST" },
+  );
+  if (!response) {
+    return;
+  }
+
+  if (response.ok) {
+    window.showAppModal("成員已加入");
+    if (targetUserIdInput) {
+      targetUserIdInput.value = "";
+    }
+    await loadMembers();
+    return;
+  }
+
+  let errorMessage = "";
+  try {
+    const errorBody = await response.json();
+    errorMessage =
+      typeof errorBody?.error === "string" ? errorBody.error.trim() : "";
+  } catch (error) {
+    console.warn("讀取新增成員錯誤訊息失敗:", error);
+  }
+
+  if (errorMessage) {
+    window.showAppModal(errorMessage);
+    return;
+  }
+
+  window.showAppModal(`新增成員失敗（${response.status}）`);
 }

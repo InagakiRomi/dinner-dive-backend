@@ -27,7 +27,8 @@ public class UserRowMapper implements RowMapper<User>{
     public User mapRow(@NonNull ResultSet resultSet, int i) throws SQLException {
         User user = new User();
         user.setUserId(resultSet.getInt("user_id"));
-        user.setGroupId(resultSet.getInt("group_id"));
+        Object groupIdObject = resultSet.getObject("group_id");
+        user.setGroupId(groupIdObject == null ? null : ((Number) groupIdObject).intValue());
         user.setUsername(resultSet.getString("username"));
         
         // 將角色字串轉為 enum

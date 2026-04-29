@@ -33,6 +33,12 @@ public interface UserDao {
     /** 修改群組名稱 */
     void updateGroupName(Integer groupId, String groupName);
 
-    /** 刪除群組成員 */
-    void deleteUserById(Integer userId, Integer groupId);
+    /** 將使用者自群組移除（保留帳號） */
+    void removeUserFromGroup(Integer userId, Integer groupId);
+
+    /** 將使用者移入指定群組 */
+    void updateUserGroup(Integer userId, Integer groupId);
+
+    /** 清除使用者群組歸屬 */
+    void clearUserGroup(Integer userId);
 }

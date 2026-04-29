@@ -45,15 +45,5 @@ public class UserInitializer implements CommandLineRunner {
             userRepository.save(user);
         }
 
-        // 訪客帳號
-        if (userRepository.findByUsername("guest").isEmpty()) {
-            User user = new User();
-            user.setUsername("guest");
-            user.setUserPassword("$2a$10$9ZcJtop4hkPDjD/7AtTjj./zB5mJgm7QcCnHeuIvHvRtMVycoLD.2");
-            user.setRoles(UserCategory.GUEST);
-            user.setCreatedDate(new Date());
-            user.setLastModifiedDate(new Date());
-            userRepository.save(user);
-        }
     }
 }

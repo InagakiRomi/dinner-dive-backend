@@ -22,7 +22,7 @@ public class UserRegisterRequest {
     private String userPassword;
 
     /** 使用者角色 */
-    @Schema(description = "使用者角色，可填 ADMIN、USER、GUEST", example = "USER")
+    @Schema(description = "使用者角色，可填 ADMIN、USER", example = "USER")
     private UserCategory roles;
 
     /** 指定要加入的群組（一般使用者可加入既有群組） */
