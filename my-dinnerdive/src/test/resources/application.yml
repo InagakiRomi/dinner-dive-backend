@@ -1,9 +1,0 @@
-spring:
-  profiles:
-    # 如果是用 MySQL，請改成 "prod"
-    # 如果是用 H2 記憶體資料庫，請設為 "dev"
-    active: dev
-
-  jackson:
-    date-format: yyyy-MM-dd HH:mm
-    time-zone: GMT+8

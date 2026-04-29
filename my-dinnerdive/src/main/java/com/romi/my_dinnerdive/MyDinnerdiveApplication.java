@@ -23,8 +23,8 @@ public class MyDinnerdiveApplication {
         // 取得 LoggingDemo 實例並印出主流程啟動 log
         LoggingDemo loggingDemo = context.getBean(LoggingDemo.class);
         Logger logger = loggingDemo.printMainLog();
-        logger.log(Level.INFO, "可啟動應用程式，請輸入 http://localhost:8080/dinnerHome 來存取應用程式。");
-        logger.log(Level.INFO, "如果要測試API，請輸入 http://localhost:8080/swagger-ui/index.html 。");
+        logger.log(Level.INFO, "可啟動應用程式，請輸入 http://localhost:9000/dinnerHome 來存取應用程式。");
+        logger.log(Level.INFO, "如果要測試API，請輸入 http://localhost:9000/swagger-ui/index.html 。");
         
     }
 }
